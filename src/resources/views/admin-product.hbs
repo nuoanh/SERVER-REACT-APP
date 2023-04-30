@@ -1,0 +1,918 @@
+{{!-- js for this page --}}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+{{!-- sweet alert --}}
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- jsDeliver -->
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.lazy/1.7.9/jquery.lazy.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.lazy/1.7.9/jquery.lazy.plugins.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.2.0/lazysizes.min.js" async=""></script>
+
+<style>
+    .contain-image {
+        cursor: pointer;
+    }
+
+    .contain-image:hover>img {
+        filter: grayscale(100%);
+    }
+
+    .choosed {
+        border: solid 4px green;
+    }
+
+    .choosed img {
+        filter: grayscale(100%);
+
+    }
+
+    .lds-roller {
+        display: inline-block;
+        position: relative;
+        width: 80px;
+        height: 80px;
+    }
+
+    .lds-roller div {
+        animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        transform-origin: 40px 40px;
+    }
+
+    .lds-roller div:after {
+        content: " ";
+        display: block;
+        position: absolute;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #fff;
+        margin: -4px 0 0 -4px;
+    }
+
+    .lds-roller div:nth-child(1) {
+        animation-delay: -0.036s;
+    }
+
+    .lds-roller div:nth-child(1):after {
+        top: 63px;
+        left: 63px;
+    }
+
+    .lds-roller div:nth-child(2) {
+        animation-delay: -0.072s;
+    }
+
+    .lds-roller div:nth-child(2):after {
+        top: 68px;
+        left: 56px;
+    }
+
+    .lds-roller div:nth-child(3) {
+        animation-delay: -0.108s;
+    }
+
+    .lds-roller div:nth-child(3):after {
+        top: 71px;
+        left: 48px;
+    }
+
+    .lds-roller div:nth-child(4) {
+        animation-delay: -0.144s;
+    }
+
+    .lds-roller div:nth-child(4):after {
+        top: 72px;
+        left: 40px;
+    }
+
+    .lds-roller div:nth-child(5) {
+        animation-delay: -0.18s;
+    }
+
+    .lds-roller div:nth-child(5):after {
+        top: 71px;
+        left: 32px;
+    }
+
+    .lds-roller div:nth-child(6) {
+        animation-delay: -0.216s;
+    }
+
+    .lds-roller div:nth-child(6):after {
+        top: 68px;
+        left: 24px;
+    }
+
+    .lds-roller div:nth-child(7) {
+        animation-delay: -0.252s;
+    }
+
+    .lds-roller div:nth-child(7):after {
+        top: 63px;
+        left: 17px;
+    }
+
+    .lds-roller div:nth-child(8) {
+        animation-delay: -0.288s;
+    }
+
+    .lds-roller div:nth-child(8):after {
+        top: 56px;
+        left: 12px;
+    }
+
+    @keyframes lds-roller {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+<div class="layout"
+    style="position: fixed; width: 100%; height: 100%; top: 0; background-color: rgba(75, 74, 74, 0.5); z-index: 100; display: none; ">
+    <div class="lds-roller" style="position: absolute; top: 50%;
+    left: 40%;
+    transform: translate(-50%, -50%);">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+</div>
+
+<div class="all-image-drive"
+    style="position: fixed; width: 80%; height: 80%; top: 58%;
+    border-left: solid 2px rgb(5, 92, 62);
+    padding: 3px;
+    left: 50%;
+    transform: translate(-50%, -50%);  background-color: rgba(255, 255, 255); z-index: 101; display: none; flex-wrap: wrap; overflow-y: scroll; justify-content: space-between;">
+    {{!-- contain all iamge product --}}
+</div>
+<div class="content-wrapper">
+    <div class="row">
+        {{!-- detail prod --}}
+        <div class="col-12 grid-margin stretch-card contain-detail-prod" style="display: none;">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Thông tin chi tiết sản phẩm</h4>
+                    <form class="forms-sample">
+                        <div class="form-group">
+                            <input type="hidden" class="id-update-prod">
+                            <label for="exampleInputName1">Tên sản phẩm</label>
+                            <p class="err-ud-name-prod"></p>
+
+                            <input type="text" class="form-control update-name-prod" id="exampleInputName1"
+                                placeholder="Tên sản phẩm" fdprocessedid="ewikud">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail3">Gía sản phẩm</label>
+                            <p class="err-ud-price-prod"></p>
+
+                            <input type="text" class="form-control update-price-prod" id="exampleInputEmail3"
+                                placeholder="Gía sản phẩm" fdprocessedid="mmc0z">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleSelectGender">Tình trạng sản phẩm</label>
+                            <select class="form-control update-draft-prod" id="exampleSelectGender"
+                                fdprocessedid="shm0vr">
+                                <option value="false">Công khai</option>
+                                <option value="true">Nháp</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleSelectGender ">Mặt hàng đặc biệt</label>
+                            <select class="form-control update-hot-prod" id="exampleSelectGender"
+                                fdprocessedid="shm0vr">
+                                <option value="false">Bình thường</option>
+                                <option value="true">Sản phẩm nổi bật</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="exampleSelectGender ">Danh mục sản phẩm</label>
+                            <select class="form-control update-cate-prod" id="exampleSelectGender"
+                                fdprocessedid="shm0vr">
+                                <option value="false">Bình thường</option>
+                                <option value="true">Sản phẩm nổi bật</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleTextarea1 ">Mô tả sản phẩm</label>
+                            <p class="err-ud-des-prod"></p>
+                            <textarea class="form-control update-des-prod" style="height: 200px;" id="exampleTextarea1"
+                                rows="4"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleTextarea1 ">Ảnh sản phẩm</label>
+                            <p class="err-ud-img-prod"></p>
+                            <div class="contain-all-image-prod"
+                                style="width: 100%; min-height: 10px; display: flex; flex-wrap: wrap;">
+
+                            </div>
+                            <button type="button" class="btn btn-success me-2 btn-add-new-image"
+                                fdprocessedid="9jz5h">Xóa/ Chọn ảnh
+                                khác</button>
+                            <div class="contain-all-image-drive-update"
+                                style="width: 100%; min-height: 10px; display: flex; flex-wrap: wrap;">
+
+                            </div>
+
+                        </div>
+
+                        <button type="button" class="btn btn-primary me-2 btn-submit-update-prod"
+                            fdprocessedid="9jz5h">Cập nhật</button>
+                        <button type="button" class="btn btn-light btn-cancel-update-prod" fdprocessedid="r0oeaq">Hủy
+                            bỏ</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {{!-- show all prod --}}
+        <div class="col-8 grid-margin stretch-card contain-all-prod">
+
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Tất cả các sản phẩm hiện có</h4>
+                    <p class="card-description">
+                        Danh sách tất cả các sản phẩm đã thêm <code>Admin là người thêm</code>
+                    </p>
+                    <div class="table-responsive pt-3">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Ảnh
+                                    </th>
+                                    <th>
+                                        Tên sản phẩm
+                                    </th>
+                                    <th>
+                                        Danh mục
+                                    </th>
+                                    <th>
+                                        Giá sản phẩm
+                                    </th>
+                                    <th>Chỉnh sửa</th>
+                                    <th>Xoá một</th>
+                                    <th>Trạng thái</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbl_all_prod">
+
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        {{!-- add prod --}}
+        <div class="col-4 grid-margin stretch-card contain-add-prod">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Thêm sản phẩm</h4>
+                    <p class="card-description">
+                        Điền đầy đủ thông tin 1 sản phẩm
+                    </p>
+                    <p class="card-description">
+                        Xem về loại sản phẩm hiện có <code>Hoặc thêm loại sản phẩm</code><a target="_blank"
+                            href="/admin/category-product">Tại đây</a>
+                    </p>
+                    <form class="forms-sample">
+                        <div class="form-group">
+                            <label for="exampleInputName1">Tên sản phẩm</label>
+                            <p class="err-name-prod"></p>
+                            <input type="text" class="form-control name-prod" id="exampleInputName1"
+                                placeholder="Tên sản phẩm">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail3">Giá sản phẩm</label>
+                            <p class="err-price-prod"></p>
+                            <input type="text" class="form-control price-prod" id="exampleInputEmail3"
+                                placeholder="Giá sản phẩm">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleSelectGender ">Tình trạng sản phẩm</label>
+                            <select class="form-control draft-prod" id="exampleSelectGender">
+                                <option value="false">Công khai</option>
+                                <option value="true">Nháp </option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleSelectGender ">Mặt hàng đặc biệt</label>
+                            <select class="form-control hot-prod" id="exampleSelectGender">
+                                <option value="false"> Bình thường</option>
+                                <option value="true">Sản phẩm nổi bật</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleSelectGender ">Thuộc danh mục sản phẩm</label>
+                            <select class="form-control cate-prod" id="exampleSelectGender">
+                                <option>Sản phẩm nổi bật</option>
+                                <option>Bình thường</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Chọn ảnh cho sản phẩm này</label>
+                            <button class="btn btn-inverse-dark btn-choose-image" type="button">Chọn ảnh</button>
+                        </div>
+                        <div class="form-group">
+                            <label>Các hình ảnh đã chọn</label>
+                            <p class="err-img-prod"></p>
+                            <div class="show-all-choosed-image"
+                                style="display: flex; width: 100%; min-height: 10px; flex-wrap: wrap;">
+
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleTextarea1 ">Mô tả sản phẩm</label>
+                            <p class="err-des-prod"></p>
+                            <textarea class="form-control des-prod" style="height: 200px;" id="exampleTextarea1"
+                                rows="4"></textarea>
+                        </div>
+
+                        <button type="button" class="btn btn-primary me-2 btn-add-prod">Thêm sản phẩm</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        var arr_image_choosed = [];
+        var arr_update_image_choosed = [];
+
+        //function load all prod
+        function loadAllProd() {
+            //call ajax to load asycn: FALSE
+            $(".layout").css("display", 'block')
+            $.ajax({
+                url: '/admin/get-all-prod',
+                async: true,
+                type: 'GET',
+                dataType: "json",
+                encode: true,
+            }).done(function (data) {
+                console.log(data)
+                let html = "";
+                data.map((prod) => {
+                    html += `  <tr>
+                                    <td>
+                                        <img src="`+ prod.image[0].urlLinkImage + `">
+                                    </td>
+                                    <td>
+                                        `+ prod.nameProduct + `
+                                    </td>`;
+                    if (prod.category) {
+                        html += ` <td>
+                        `+ prod.category.name + `
+                    </td>`;
+                    }else{
+                        html += `<td>Chưa có</td>`
+                    }
+
+                    html += `
+                                    
+                                    <td>
+                                           `+ prod.price + ` vnđ
+                                    </td>
+                                   
+                                    <td><button type="button" class="btn btn-primary btn-sm btn-detail" data-id="`+ prod._id + `">chi tiết</button></td>
+                                    <td><button type="button" class="btn btn-warning btn-sm btn-delete-prod"  data-id="`+ prod._id + `">xoá</button></td>                                   
+                                 <td>
+                                           ` ;
+                    if (prod.draft === true) {
+                        html += `<button type="button" class="btn btn-inverse-warning btn-sm btn-change-publish" data-id="` + prod._id + `">Nháp</button>`;
+                    } else {
+                        html += `<button type="button" class="btn btn-inverse-info btn-fw btn-sm btn-change-draft" data-id="` + prod._id + `">Công khai</button>`;
+                    }
+                    html += `
+                                    </td>
+                                </tr>`;
+
+                })
+                $("#tbl_all_prod").html(html);
+                $(".layout").hide();
+            }).then(() => {
+                $(".btn-detail").click(function () {
+                    $(".contain-all-prod").hide()
+                    $(".contain-add-prod").hide();
+
+                    let idProd = $(this).attr('data-id');
+                    $(".layout").show();
+                    //call ajax get detail 1 product
+                    $.ajax({
+                        url: '/admin/get-detail-prod/' + idProd + '',
+                        async: true,
+                        type: 'GET',
+                        dataType: "json",
+                        encode: true,
+                    }).done(function (data) {
+                        console.log(data)
+                        $(".id-update-prod").val(data._id);
+                        $(".update-name-prod").val(data.nameProduct)
+                        $(".update-price-prod").val(data.price)
+                        $('.update-draft-prod option[value=' + data.draft + ']').prop('selected', true);
+                        $('.update-hot-prod option[value=' + data.hotProduct + ']').prop('selected', true);
+                        $('.update-cate-prod option[value=' + data.category + ']').prop('selected', true);
+
+                        //category từ từ
+                        $(".update-des-prod").val(data.description)
+                        let arr_img_prod = data.image;
+                        arr_update_image_choosed = data.image;
+                        let html = "";
+                        arr_img_prod.map((img) => {
+                            html += `<img src='` + img.urlLinkImage + `' style="width: 150px; height: auto; margin-left: 2px; margin-top: 2px">`;
+                        })
+                        $(".contain-all-image-prod").html(html)
+                    }).then(() => {
+                        $(".layout").hide();
+                        $(".contain-detail-prod").css('display', 'block')
+                    })
+                })
+            })
+                .then(() => {
+                    $(".btn-delete-prod").click(function () {
+                        let idProd = $(this).attr('data-id');
+                        let idProject = new FormData();
+                        idProject = { '_id': idProd }
+                        Swal.fire({
+                            title: 'Bạn có chắc muốn xóa sản phẩm này?',
+                            text: "Bạn không thể khôi phục sản phẩm này sau khi xóa!",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Đồng ý'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                $.ajax({
+                                    url: '/admin/delete-prod',
+                                    type: 'POST',
+                                    async: false,
+                                    data: idProject,
+                                    dataType: "json",
+                                    encode: true,
+                                }).done(function (data) {
+                                    if (data == 'success') {
+                                        $(".layout").hide();
+                                        Swal.fire(
+                                            'Xóa thành công!',
+                                            'Your file has been deleted.',
+                                            'success'
+                                        )
+                                    } else {
+                                        console.log(data)
+                                    }
+                                }).then(() => {
+                                    loadAllProd()
+                                })
+
+                            }
+                        })
+                    })
+                }).then(() => {
+                    $(".btn-change-draft").click(function () {
+                        let idProd = $(this).attr('data-id');
+                        $(".layout").css('display', 'block');
+                        //call axjax update draft
+                        let form = new FormData()
+                        form = {
+                            _id: idProd,
+                            obj: {
+                                draft: true
+                            }
+                        }
+                        console.log(form)
+                        //call ajax requesst post to update
+                        $.ajax({
+                            url: '/admin/update-prod',
+                            async: true,
+                            type: 'POST',
+                            dataType: "json",
+                            data: form,
+                            encode: true,
+                        }).done(function (data) {
+                            if (data == 'success') {
+                                $(".layout").hide();
+                                Swal.fire({
+                                    position: 'top-end',
+                                    icon: 'success',
+                                    title: 'Cập nhật sản phẩm thành công',
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                })
+                                loadAllProd();
+                            }
+                        })
+
+                    })
+                }).then(() => {
+                    $(".btn-change-publish").click(function () {
+                        let idProd = $(this).attr('data-id');
+                        $(".layout").css('display', 'block');
+                        //call axjax update draft
+                        let form = new FormData()
+                        form = {
+                            _id: idProd,
+                            obj: {
+                                draft: false
+                            }
+                        }
+                        console.log(form)
+                        //call ajax requesst post to update
+                        $.ajax({
+                            url: '/admin/update-prod',
+                            async: true,
+                            type: 'POST',
+                            dataType: "json",
+                            data: form,
+                            encode: true,
+                        }).done(function (data) {
+                            if (data == 'success') {
+                                $(".layout").hide();
+                                Swal.fire({
+                                    position: 'top-end',
+                                    icon: 'success',
+                                    title: 'Cập nhật sản phẩm thành công',
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                })
+                                loadAllProd();
+                            }
+                        })
+
+                    })
+                })
+
+        }
+        loadAllProd();
+
+        //fuction load all category
+        loadAllCategory()
+        function loadAllCategory() {
+            $.ajax({
+                url: '/admin/get-all-category',
+                async: true,
+                type: 'GET',
+                dataType: "json",
+                encode: true,
+            }).done(function (data) {
+                let html = "";
+                data.map((cate) => {
+                    html += `  <option value="` + cate._id + `">` + cate.name + `</option>`;
+                })
+                console.log(data)
+                $(".cate-prod").html(html);
+                $(".update-cate-prod").html(html);
+            })
+        }
+
+        $(".btn-choose-image").click(async function () {
+            //function load imagedessign
+            function loadImage() {
+                $(".layout").css('display', 'block');
+                //call api get all image in folder
+                //  GET request using ajax()
+                $.ajax({
+                    url: '/admin/all-image-project',
+                    async: true,
+                    type: 'GET',
+                    dataType: "json",
+                    encode: true,
+                }).done(function (data) {
+                    let html = '';
+                    data.map((item) => {
+                        let appear = false;
+                        for (let i = 0; i < arr_image_choosed.length; i++) {
+                            if (arr_image_choosed[i].idImage === item.id) {
+                                appear = true;
+                                break;
+                            }
+                        }
+                        if (appear == false) {
+                            html += `<div class="contain-image" data-id="` + item.id + `"
+        style="width: 18%; height: 200px; position: relative; margin-left: 2px; margin-top: 2px">
+        <img src="`+ item.thumbnailLink + `" 
+            style="object-fit: cover; height: 100%; position: absolute; width: 100%;" alt="">
+        <button data-id="` + item.id + `" data-name="` + item.name + `" style="position: absolute; top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);" type="button" class="btn btn-outline-success btn-fw btn-choose-this-image">Chọn ảnh này</button>
+    </div>`;
+                        } else {
+                            html += `<div class="contain-image choosed" data-id="` + item.id + `"
+        style="width: 18%; height: 200px; position: relative; margin-left: 2px; margin-top: 2px">
+        <img src="`+ item.thumbnailLink + `" 
+            style="object-fit: cover; height: 100%; position: absolute; width: 100%;" alt="">
+    </div>`;
+                        }
+
+
+                    })
+                    $(".all-image-drive").html(html);
+
+                }).then(() => {
+                    $(".all-image-drive").css('display', 'flex');
+                }).then(() => {
+                    //choose image
+                    $(".btn-choose-this-image").click(function () {
+                        let idImage = $(this).attr('data-id');
+                        let nameImage = $(this).attr('data-name');
+                        let urlLink = `https://drive.google.com/uc?id=` + idImage + ` `;
+                        arr_image_choosed.push({
+                            idImage: idImage,
+                            nameImage: nameImage,
+                            urlLinkImage: urlLink,
+                        })
+                        $(this).hide();
+                        $(".contain-image[data-id='" + idImage + "']").addClass('choosed');
+                        $(".all-image-drive").hide();
+                        setTimeout(function () {
+                            loadImage()
+                        }, 100)
+                    })
+                }).then(() => {
+                    $(".choosed").click(function () {
+                        let idImage = $(this).attr('data-id');
+                        for (let i = 0; i < arr_image_choosed.length; i++) {
+                            if (arr_image_choosed[i].idImage === idImage) {
+                                arr_image_choosed.splice(i, 1);
+                            }
+                        }
+                        $(".contain-image[data-id='" + idImage + "']").removeClass('choosed');
+                        $(".all-image-drive").hide();
+                        setTimeout(function () {
+                            loadImage()
+                        }, 100)
+                    })
+                }).then(() => {
+                    let html_show_all_image = "";
+                    arr_image_choosed.map((image) => {
+                        html_show_all_image += '<img src="' + image.urlLinkImage + '" style= "margin-left: 2px; margin-top: 2px; width: 50px; height: 50px;" alt="">'
+                    })
+                    $(".show-all-choosed-image").html(html_show_all_image);
+                })
+            }
+            loadImage()
+        })
+        //add prod
+        $(".btn-add-prod").click(function () {
+
+            $(".err-name-prod").html(" ");
+            $(".err-des-prod").html(" ");
+            $(".err-price-prod").html(" ");
+            $(".err-img-prod").html(" ");
+            let permision_submit = true;
+            var vl_name_prod = $(".name-prod").val();
+            var vl_price_prod = $(".price-prod").val();
+            var vl_des_prod = $(".des-prod").val();
+            var vl_draft_prod = $(".draft-prod").val();
+            var vl_hot_prod = $(".hot-prod").val();
+            var vl_cate_prod = $(".cate-prod").val();
+            //cate từ từ đang làm
+
+
+            if (vl_name_prod == "") {
+                $(".err-name-prod").html('Chưa điền tên sản phẩm').css('color', 'red');
+                permision_submit = false;
+            }
+            if (vl_des_prod == "") {
+                $(".err-des-prod").html('Chưa điền mô tả sản phẩm').css('color', 'red');
+                permision_submit = false;
+            }
+            if (vl_price_prod == "") {
+                $(".err-price-prod").html('Chưa điền giá sản phẩm').css('color', 'red');
+                permision_submit = false;
+            }
+            if (arr_image_choosed.length == 0) {
+                $(".err-img-prod").html('Chưa chọn ảnh sản phẩm').css('color', 'red');
+                permision_submit = false;
+            }
+            if (permision_submit) {
+                $(".layout").css('display', 'block');
+
+                let form = new FormData();
+                form = {
+                    nameProduct: vl_name_prod,
+                    price: vl_price_prod,
+                    description: vl_des_prod,
+                    draft: vl_draft_prod,
+                    image: arr_image_choosed,
+                    hotProduct: vl_hot_prod,
+                    category: vl_cate_prod
+                }
+                //call ajax requesst post
+                $.ajax({
+                    url: '/admin/add-prod',
+                    async: true,
+                    type: 'POST',
+                    dataType: "json",
+                    data: form,
+                    encode: true,
+                }).done(function (data) {
+                    if (data == 'success') {
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'Thêm sản phẩm thành công',
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                    }
+                }).then(() => {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Thêm sản phẩm thành công',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                    $(".layout").hide();
+                    $(".name-prod").val("");
+                    $(".price-prod").val("");
+                    $(".des-prod").val("");
+                    $(".draft-prod").val("");
+                    $(".hot-prod").val("");
+                    arr_image_choosed = [];
+                    $(".show-all-choosed-image").html(" ")
+
+                }).then(() => {
+                    setTimeout(function () {
+                        location.reload(true);
+                    }, 1000)
+                })
+            }
+
+        })
+
+        //cancel updateprod
+        $(".btn-cancel-update-prod").click(function () {
+            $(".contain-detail-prod").hide()
+            $(".contain-all-prod").show()
+            $(".contain-add-prod").show();
+            window.scrollTo(0, 0);
+        })
+
+        //update new image prod
+        $(".btn-add-new-image").click(function () {
+            function updateDeleteImageProd() {
+                $(".update-delete-image-prod").click(function () {
+                    let idImage = $(this).attr('data-id');
+                    //xóa phânf từ tại mảng đó
+                    for (let i = 0; i < arr_update_image_choosed.length; i++) {
+                        if (arr_update_image_choosed[i].idImage === idImage) {
+                            arr_update_image_choosed.splice(i, 1);
+                        }
+                    }
+                    updateImageProd()
+                })
+            }
+
+            function updateImageProd() {
+                let html_img_update = ""
+                arr_update_image_choosed.map((item) => {
+                    html_img_update += `<div class="update-delete-image-prod" data-id='` + item.idImage + `' style="cursor: pointer; margin: 2px 2px 0 0px;position: relative; width: 150px; height: 150px"> 
+                    <img src = "` + item.urlLinkImage + `" style="position: absolute; width: 100%; height:100%; object-fit: cover">
+                    </div>`;
+                })
+                $(".contain-all-image-prod").html(html_img_update)
+                updateDeleteImageProd()
+            }
+            let html = "";
+            $(".layout").show();
+            $.ajax({
+                url: '/admin/all-image-project',
+                async: true,
+                type: 'GET',
+                dataType: "json",
+                encode: true,
+            }).done(function (data) {
+                data.map((item) => {
+
+                    html += `<div class="contain-new-img-update" data-id='` + item.id + `' data-name='` + item.name + `' style="cursor: pointer; margin: 2px 2px 0 0px;position: relative; width: 150px; height: 150px"> 
+                    <img src = "` + item.thumbnailLink + `" style="position: absolute; width: 100%; height:100%; object-fit: cover">
+                    </div>
+                    `;
+                })
+            }).then(() => {
+                $(".layout").hide();
+                $(".contain-all-image-drive-update").html(html);
+            }).then(() => {
+                $(".contain-new-img-update").click(function () {
+                    $(".layout").show();
+                    let idImage = $(this).attr('data-id');
+                    let nameImage = $(this).attr('data-name');
+                    let urlLink = `https://drive.google.com/uc?id=` + idImage + ` `;
+
+                    arr_update_image_choosed.push({
+                        idImage: idImage,
+                        nameImage: nameImage,
+                        urlLinkImage: urlLink,
+                    })
+                    updateImageProd()
+                    setTimeout(function () {
+                        $(".layout").hide();
+
+                    }, 1000)
+
+                })
+            }).then(() => {
+                updateImageProd()
+            })
+
+
+        })
+
+
+        //submit update product
+        $(".btn-submit-update-prod").click(function () {
+            let idProd = $(".id-update-prod").val();
+            $(".err-ud-name-prod").html(" ");
+            $(".err-ud-des-prod").html(" ");
+            $(".err-ud-price-prod").html(" ");
+            $(".err-ud-img-prod").html(" ");
+            let permision_submit = true;
+            var ud_name_prod = $(".update-name-prod").val();
+            var ud_price_prod = $(".update-price-prod").val();
+            var ud_des_prod = $(".update-des-prod").val();
+            var ud_draft_prod = $(".update-draft-prod").val();
+            var ud_hot_prod = $(".update-hot-prod").val();
+            var ud_cate_prod = $(".update-cate-prod").val();
+            //cate từ từ đang làm
+            if (ud_name_prod == "") {
+                $(".err-ud-name-prod").html('Chưa điền tên sản phẩm').css('color', 'red');
+                permision_submit = false;
+            }
+            if (ud_des_prod == "") {
+                $(".err-ud-des-prod").html('Chưa điền mô tả sản phẩm').css('color', 'red');
+                permision_submit = false;
+            }
+            if (ud_price_prod == "") {
+                $(".err-ud-price-prod").html('Chưa điền giá sản phẩm').css('color', 'red');
+                permision_submit = false;
+            }
+            if (arr_update_image_choosed.length == 0) {
+                $(".err-ud-img-prod").html('Chưa chọn ảnh sản phẩm').css('color', 'red');
+                permision_submit = false;
+            }
+            if (permision_submit) {
+                $(".layout").css('display', 'block');
+
+                let form = new FormData();
+                form = {
+                    _id: idProd,
+                    obj: {
+                        nameProduct: ud_name_prod,
+                        price: ud_price_prod,
+                        description: ud_des_prod,
+                        draft: ud_draft_prod,
+                        image: arr_update_image_choosed,
+                        hotProduct: ud_hot_prod,
+                        category: ud_cate_prod
+                    }
+                }
+                //call ajax requesst post to update
+                $.ajax({
+                    url: '/admin/update-prod',
+                    async: true,
+                    type: 'POST',
+                    dataType: "json",
+                    data: form,
+                    encode: true,
+                }).done(function (data) {
+                    if (data == 'success') {
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'Cập nhật sản phẩm thành công',
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                    }
+                }).then(() => {
+                    setTimeout(function () {
+                        location.reload(true);
+                    }, 1000)
+                })
+            }
+
+        })
+
+        //delete prod
+
+        $(".layout").click(function () {
+            $(this).hide();
+            $(".all-image-drive").css('display', 'none')
+        })
+    })
+</script>

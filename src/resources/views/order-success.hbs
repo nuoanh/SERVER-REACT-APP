@@ -1,0 +1,403 @@
+{{!-- /get-inf-company --}}
+{{!-- js for this page --}}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+{{!-- sweet alert --}}
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- jsDeliver -->
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.lazy/1.7.9/jquery.lazy.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.lazy/1.7.9/jquery.lazy.plugins.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.2.0/lazysizes.min.js" async=""></script>
+<script>
+    $(document).ready(function () {
+        loadData()
+        function loadData() {
+            $(".layout").css('display', 'block')
+            $.ajax({
+                url: '/admin/get-all-bill-pay',
+                async: true,
+                type: 'GET',
+                dataType: "json",
+                encode: true,
+                responseType: 'application/json'
+            }).done(function (data) {
+                console.log('data', data);
+                let html;
+                let i = 0;
+                data.map((bill) => {
+                    if (bill.status == true) {
+                        i++;
+                        let sum_bill = 0;
+                        html += `<tr>
+                    <td>`+ i + `</td>
+
+                      <td>
+                                `+ bill._id + `
+                            </td>
+                            <td>
+                                `;
+                        if (bill.account) {
+                            html += bill.account.name
+                        } else {
+                            html += bill.inf.nameSend
+                        }
+
+                        html += `
+                            </td>
+                            <td>
+                                `+ bill.updatedAt + `
+                            </td>
+                            <td>
+                                `;
+
+                        if (bill.account) {
+                            html += bill.account.email
+                        } else {
+                            html += `<p style="color: red">người dùng tự do</p>`;
+                        }
+                        html += `
+                            </td>
+                            <td>
+                                `+ bill.inf.recipient + `
+                            </td>
+
+                            <td>
+                                `+ bill.inf.addressRecevie + `
+                            </td>
+
+                            <td>
+                                <ul>`;
+                        bill.products.map((prod) => {
+                            if (prod.product) {
+                                sum_bill += parseFloat(prod.count) * parseFloat(prod.price);
+                                html += `   <li>
+                                    Ảnh: <img src="`+ prod.product.image[0].urlLinkImage + `"/> || Số lượng: ` + prod.count + ` ||  Giá: ` + parseFloat(prod.price).toLocaleString('en-US', { style: 'currency', currency: 'VND' }) + `
+                                    </li>
+                                    
+                                   `;
+                            } else {
+                                html += `<p style="color: red">sản phẩm này không tồn tại</p>`;
+                            }
+
+
+                        })
+
+
+
+
+                        html += `</ul>
+                            </td>
+                            <td>`+ bill.inf.phone + `</td>
+                            <td>`+ sum_bill.toLocaleString('en-US', { style: 'currency', currency: 'VND' }) + `</td>
+                            `;
+                        if (bill.status == false) {
+                            html += ` <td>
+                                <button type="button" class="btn btn-inverse-info btn-fw btn-sm btn-change-draft"
+                                 >Duyệt</button>
+                            </td>`;
+                        } else {
+                            html += ` <td>
+                                <button type="button" class="btn btn-outline-secondary btn-fw"
+                                  > Đã xác nhận</button>
+                            </td>`;
+                        }
+                        if (bill.payment) {
+                            html += ` <td>
+                                <button type="button" class="btn btn-outline-secondary btn-fw"
+                                  > Đã thanh toán</button>
+                            </td>`
+                        } else {
+                            html += ` <td>
+                                <button type="button" class="btn btn-inverse-info btn-fw btn-sm btn-payment" data-id=
+                            '`+ bill._id + `'
+                                  > Chưa thanh toán</button>
+                            </td>`
+                        }
+
+                        if (bill.shipping) {
+                            html += ` <td>
+                                <button type="button" class="btn btn-outline-secondary btn-fw"
+                                  > Đã vận chuyển</button>
+                            </td>`
+                        } else {
+                            html += ` <td>
+                                <button type="button" class="btn btn-inverse-info btn-fw btn-sm btn-shipping" data-id=
+                            '`+ bill._id + `'
+                                  > Chưa vận chuyển</button>
+                            </td>`
+                        }
+                        html += `
+                           
+                        </tr>`
+
+                            ;
+                    }
+
+                })
+                $("#tbl_all_bill").html(html);
+                $(".layout").hide();
+            }).then(() => {
+                $(".btn-payment").click(function () {
+                    $(".layout").css('display', 'block')
+                    let dataId = $(this).attr('data-id');
+                    Swal.fire({
+                        title: 'Bạn có chắc là khách hàng đã thanh toán đơn hàng này?',
+                        showDenyButton: true,
+                        showCancelButton: true,
+                        confirmButtonText: 'Save',
+                        denyButtonText: `Don't save`,
+                    }).then((result) => {
+                        /* Read more about isConfirmed, isDenied below */
+                        if (result.isConfirmed) {
+                            let form = new FormData()
+                            form = {
+                                _id: dataId,
+                                obj: {
+                                    payment: true,
+                                }
+                            }
+
+                            $.ajax({
+                                url: '/admin/accept-bill',
+                                async: true,
+                                type: 'POST',
+                                data: form,
+                                dataType: "json",
+                                encode: true,
+                                responseType: 'application/json'
+                            }).done(function (data) {
+                                $(".layout").hide();
+                                if (data == 'success') {
+                                    loadData();
+                                    Swal.fire('Xử lí thanh toán thành công!', '', 'success')
+                                } else {
+                                    console.log(data);
+                                    Swal.fire('Lỗi hệ thống ', '', 'info')
+                                }
+                            })
+
+                        } else if (result.isDenied) {
+                            Swal.fire('Đơn này chưa được thanh toán', '', 'info')
+                        }
+                    })
+                })
+            }).then(() => {
+                $(".btn-shipping").click(function () {
+                    $(".layout").css('display', 'block')
+                    let dataId = $(this).attr('data-id');
+                    Swal.fire({
+                        title: 'Bạn có chắc là khách hàng đã thanh toán đơn hàng này?',
+                        showDenyButton: true,
+                        showCancelButton: true,
+                        confirmButtonText: 'Save',
+                        denyButtonText: `Don't save`,
+                    }).then((result) => {
+                        /* Read more about isConfirmed, isDenied below */
+                        if (result.isConfirmed) {
+                            let form = new FormData()
+                            form = {
+                                _id: dataId,
+                                obj: {
+                                    shipping: true,
+                                }
+                            }
+
+                            $.ajax({
+                                url: '/admin/accept-bill',
+                                async: true,
+                                type: 'POST',
+                                data: form,
+                                dataType: "json",
+                                encode: true,
+                                responseType: 'application/json'
+                            }).done(function (data) {
+                                $(".layout").hide();
+                                if (data == 'success') {
+                                    loadData();
+                                    Swal.fire('Xử lí vận chuyển thành công!', '', 'success')
+                                } else {
+                                    console.log(data);
+                                    Swal.fire('Lỗi hệ thống ', '', 'info')
+                                }
+                            })
+
+                        } else if (result.isDenied) {
+                            Swal.fire('Đơn này chưa được vận chuyển', '', 'info')
+                        }
+                    })
+                })
+            })
+
+        }
+    })
+</script>
+<div class="layout"
+    style="position: fixed; width: 100%; height: 100%; top: 0; background-color: rgba(75, 74, 74, 0.5); z-index: 100; display: none; ">
+    <div class="lds-roller" style="position: absolute; top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+</div>
+<div class="col-12 grid-margin stretch-card contain-all-prod">
+
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Tất cả các đơn chưa duyệt</h4>
+            <p class="card-description">
+                Danh sách tất cả các đơn chưa được xử lí <code>Admin là người xử lí</code>
+            </p>
+            <div class="table-responsive pt-3">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>
+
+                            </th>
+                            <th>
+                                Id bill
+                            </th>
+                            <th>
+                                Người mua
+                            </th>
+                            <th>
+                                Thời gian
+                            </th>
+                            <th>
+                                Địa chỉ email
+                            </th>
+                            <th>
+                                Người nhận
+                            </th>
+                            <th>
+                                Địa chỉ nhận hàng
+                            </th>
+                            <th>Thông tin đơn hàng</th>
+                            <th>Số điện thoại</th>
+                            <th>Tổng hoá đơn</th>
+                            <th>Trạng thái</th>
+                            <th>Trạng thái thanh toán</th>
+                            <th>Trạng thái vận chuyển</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbl_all_bill">
+
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .lds-roller {
+        display: inline-block;
+        position: relative;
+        width: 80px;
+        height: 80px;
+    }
+
+    .lds-roller div {
+        animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        transform-origin: 40px 40px;
+    }
+
+    .lds-roller div:after {
+        content: " ";
+        display: block;
+        position: absolute;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #fff;
+        margin: -4px 0 0 -4px;
+    }
+
+    .lds-roller div:nth-child(1) {
+        animation-delay: -0.036s;
+    }
+
+    .lds-roller div:nth-child(1):after {
+        top: 63px;
+        left: 63px;
+    }
+
+    .lds-roller div:nth-child(2) {
+        animation-delay: -0.072s;
+    }
+
+    .lds-roller div:nth-child(2):after {
+        top: 68px;
+        left: 56px;
+    }
+
+    .lds-roller div:nth-child(3) {
+        animation-delay: -0.108s;
+    }
+
+    .lds-roller div:nth-child(3):after {
+        top: 71px;
+        left: 48px;
+    }
+
+    .lds-roller div:nth-child(4) {
+        animation-delay: -0.144s;
+    }
+
+    .lds-roller div:nth-child(4):after {
+        top: 72px;
+        left: 40px;
+    }
+
+    .lds-roller div:nth-child(5) {
+        animation-delay: -0.18s;
+    }
+
+    .lds-roller div:nth-child(5):after {
+        top: 71px;
+        left: 32px;
+    }
+
+    .lds-roller div:nth-child(6) {
+        animation-delay: -0.216s;
+    }
+
+    .lds-roller div:nth-child(6):after {
+        top: 68px;
+        left: 24px;
+    }
+
+    .lds-roller div:nth-child(7) {
+        animation-delay: -0.252s;
+    }
+
+    .lds-roller div:nth-child(7):after {
+        top: 63px;
+        left: 17px;
+    }
+
+    .lds-roller div:nth-child(8) {
+        animation-delay: -0.288s;
+    }
+
+    .lds-roller div:nth-child(8):after {
+        top: 56px;
+        left: 12px;
+    }
+
+    @keyframes lds-roller {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>

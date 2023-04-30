@@ -1,0 +1,16 @@
+npm init
+npm i
+install express
+install express-handlebars
+install debug logger: morgan
+install nodemon
+install mongoose
+config crud helper
+config script tab connect to db in dotenv
+if u want tô use google api config token in dotenv
+
+
+if use template handle-bar(config lay out)
+or write resfull api to handles
+ 
+//use jwt for authorziation

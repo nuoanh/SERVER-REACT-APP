@@ -1,0 +1,170 @@
+{{!-- js for this page --}}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+{{!-- sweet alert --}}
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- jsDeliver -->
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.lazy/1.7.9/jquery.lazy.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.lazy/1.7.9/jquery.lazy.plugins.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.2.0/lazysizes.min.js" async=""></script>
+<script>
+    $(document).ready(function () {
+        loadInfCompany()
+        function loadInfCompany() {
+            $(".layout").css('display', 'block')
+            $.ajax({
+                url: '/get-inf-company',
+                async: true,
+                type: 'GET',
+                dataType: "json",
+                encode: true,
+                responseType: 'application/json'
+            }).done(function (data) {
+                $(".logo").attr('src', data.logo)
+            })
+        }
+        getInfUser();
+        function getInfUser() {
+            //get-inf-login
+            $.ajax({
+                url: '/get-inf-login',
+                async: true,
+                type: 'GET',
+                dataType: "json",
+                encode: true,
+                responseType: 'application/json'
+            }).done(function (data) {
+                console.log('123123123', data)
+                if (data.status == 'success') {
+                    $(".name-account").html('<i class="fa fa-user s_color"></i>' + data.data.name + '');
+                    $(".registration").html(`<a style="background-color: white; padding: 10px" href="../login" target='_blank'>Đăng xuất<a>
+                       `);
+                    $(".name-account").attr('href', '/profile');
+                } else {
+
+                    $(".name-account").html('<i class="fa fa-user s_color"></i>Chưa đăng nhập');
+                    $(".name-account").attr('href', '/login');
+                    $(".registration").html(`<a style="background-color: white; padding: 10px" href="/register" target='_blank'>Đăng kí<a>`);
+
+                }
+            })
+        }
+    })
+</script>
+<!-- Start Main Top -->
+<div class="main-top">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <div class="custom-select-box">
+
+                </div>
+                <div class="right-phone-box">
+                    <p>Gọi tôi: <a href="#"> 0868617603</a></p>
+                </div>
+                <div class="our-link">
+                    <ul>
+                        <li><a href="#" class="name-account"></a></li>
+                        <li><a href="/contact"><i class="fas fa-headset"></i> Liên hệ</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <div class="login-box registration">
+
+
+                </div>
+                <div class="text-slid-box">
+                    <div id="offer-box" class="carouselTicker">
+                        {{!-- //sale --}}
+                        <ul class="offer-box">
+                            <li>
+                                <i class="fab fa-opencart"></i> Chào mừng quý khách hàng đã ghé thăm shop của chúng tôi
+                            </li>
+                            <i class="fab fa-opencart"></i> Sen Đá và những câu chuyện
+
+                        </ul>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Start Main Top -->
+<header class="main-header">
+    <!-- Start Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-default bootsnav">
+        <div class="container">
+            <!-- Start Header Navigation -->
+            <div class="navbar-header">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu"
+                    aria-controls="navbars-rs-food" aria-expanded="false" aria-label="Toggle navigation">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand" href="index.html"><img src="images/logo.png" width="70px"
+                        style="border-radius: 50%" class="logo" alt=""></a>
+            </div>
+            <!-- End Header Navigation -->
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="navbar-menu">
+                <ul class="nav navbar-nav ml-auto" data-in="fadeInDown" data-out="fadeOutUp">
+                    <li class="nav-item active"><a class="nav-link" href="/">Trang chủ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/about">Về chúng tôi</a></li>
+                    <li class="nav-item">
+                        <a href="/shop" class="nav-link">SHOP</a>
+
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="/contact">Liên hệ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/blog">Chuyện Sen Đá</a></li>
+
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+
+            <!-- Start Atribute Navigation -->
+            <div class="attr-nav">
+                <ul>
+
+                    <li class="side-menu">
+                        <a href="/cart">
+                            <i class="fa fa-shopping-bag"></i>
+                            <p>Giỏ hàng</p>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <!-- End Atribute Navigation -->
+        </div>
+        <!-- Start Side Menu -->
+        <div class="side">
+            <a href="#" class="close-side"><i class="fa fa-times"></i></a>
+            <li class="cart-box">
+                <ul class="cart-list">
+                    <li>
+                        <a href="#" class="photo"><img src="images/img-pro-01.jpg" class="cart-thumb" alt="" /></a>
+                        <h6><a href="#">Delica omtantur </a></h6>
+                        <p>1x - <span class="price">$80.00</span></p>
+                    </li>
+                    <li>
+                        <a href="#" class="photo"><img src="images/img-pro-02.jpg" class="cart-thumb" alt="" /></a>
+                        <h6><a href="#">Omnes ocurreret</a></h6>
+                        <p>1x - <span class="price">$60.00</span></p>
+                    </li>
+                    <li>
+                        <a href="#" class="photo"><img src="images/img-pro-03.jpg" class="cart-thumb" alt="" /></a>
+                        <h6><a href="#">Agam facilisis</a></h6>
+                        <p>1x - <span class="price">$40.00</span></p>
+                    </li>
+                    <li class="total">
+                        <a href="#" class="btn btn-default hvr-hover btn-cart">VIEW CART</a>
+                        <span class="float-right"><strong>Total</strong>: $180.00</span>
+                    </li>
+                </ul>
+            </li>
+        </div>
+        <!-- End Side Menu -->
+    </nav>
+    <!-- End Navigation -->
+</header>
+<!-- End Main Top -->

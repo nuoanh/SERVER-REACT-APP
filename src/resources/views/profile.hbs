@@ -1,0 +1,394 @@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+{{!-- js for this page --}}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+{{!-- sweet alert --}}
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- jsDeliver -->
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.lazy/1.7.9/jquery.lazy.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.lazy/1.7.9/jquery.lazy.plugins.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.2.0/lazysizes.min.js" async=""></script>
+<script>
+    $(document).ready(function () {
+        var idAccount = 0;
+        getInfUser();
+        function getInfUser() {
+            $(".layout").css('display', 'block')
+            //get-inf-login
+            $.ajax({
+                url: '/get-inf-login',
+                async: true,
+                type: 'GET',
+                dataType: "json",
+                encode: true,
+                responseType: 'application/json'
+            }).done(function (data) {
+                if (data.status == 'success') {
+                    idAccount = data.data.id
+                    $(".name").html(data.data.name)
+                    $(".email-user").html(data.data.email)
+                    $(".idd1").html(data.data.id)
+                    $("#idAccount").val(data.data.id);
+
+                }
+            }).then(() => {
+                //get more inf user
+                $.ajax({
+                    url: '/get-inf-account',
+                    async: true,
+                    type: 'POST',
+                    dataType: "json",
+                    data: { idAccount: idAccount },
+                    encode: true,
+                    responseType: 'application/json'
+                }).done(function (data) {
+                    console.log(data)
+                    $(".vl-name").val(data.name);
+                    $(".vl-email").val(data.email);
+                    $(".vl-phone").val(data.phone);
+                    $(".vl-address").val(data.address);
+                    $(" #avata-user").attr('src', data.imageAvata)
+                    $(".layout").hide();
+                })
+            })
+        }
+        $(".btn-update-inf-account").click(function () {
+            $(".layout").css('display', 'block')
+            let name = $(".vl-name").val();
+            let email = $(".vl-email").val();
+            let phone = $(".vl-phone").val();
+            let address = $(".vl-address").val();
+            $(".err-name").html(" ")
+            $(".err-phone").html(" ")
+            $(".err-email").html(" ")
+            $(".err-address").html(" ")
+
+            let permit = true;
+            if (name == "") {
+                permit = false;
+                $(".err-name").html('chưa điền tên')
+            }
+            if (phone == "") {
+                permit = false;
+                $(".err-phone").html('chưa điền số điện thoại')
+            }
+            if (email == "") {
+                permit = false;
+                $(".err-email").html('chưa điền email')
+            }
+            if (address == "") {
+                permit = false;
+                $(".err-address").html('chưa điền địa chỉ')
+            }
+            if (permit == true) {
+                let form = new FormData();
+                form = {
+                    _id: idAccount,
+                    obj: {
+                        name: name,
+                        address: address,
+                        phone: phone
+                    }
+                }
+                $.ajax({
+                    url: '/update-inf-account',
+                    async: true,
+                    type: 'POST',
+                    dataType: "json",
+                    data: form,
+                    encode: true,
+                    responseType: 'application/json'
+                }).done(function (data) {
+                    if (data == 'success') {
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'Cập nhật thành công',
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                        getInfUser();
+                    } else {
+                        alert(data)
+                    }
+                })
+            }
+            $(".layout").hide();
+        })
+
+        //update avata
+        $(".btn-update-avata").click(function () {
+            if (!$('#vl-avata').val()) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Chưa chọn ảnh!',
+                    footer: '<a href="">Bạn muốn cập nhật ảnh đại diện, xin hãy chọn ảnh?</a>'
+                })
+            } else {
+                $("#form-upload-avata").submit();
+            }
+        })
+    })
+</script>
+<div class="layout"
+    style="position: fixed; width: 100%; height: 100%; top: 0; background-color: rgba(75, 74, 74, 0.5); z-index: 100; display: none; ">
+    <div class="lds-roller" style="position: absolute; top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+</div>
+<div class="container mt-4 mb-4 p-3 d-flex justify-content-center">
+    <div class="card p-4">
+        <form action="/update-avata-account" enctype="multipart/form-data" id="form-upload-avata" method="POST">
+
+            <div class=" image d-flex flex-column justify-content-center align-items-center"> <button
+                    class="btn btn-secondary"> <img src="https://i.imgur.com/wvxPV9S.png" id="avata-user" height="100"
+                        width="100" /></button> <span class="name mt-3"></span> <span class="idd email-user"></span>
+                <div class="d-flex flex-row justify-content-center align-items-center gap-2"> <span
+                        class="idd1">Oxc4c16a645_b21a</span> <span><i class="fa fa-copy"></i></span> </div>
+                <button class="btn1 btn-outline-secondary" style="position: relative;">
+                    <input type="hidden" id="idAccount" name="idAccount">
+                    <input type="file" id="vl-avata" name="file"
+                        style="width: 100%; height: 100%; position: absolute; top: 0; opacity: 0" accept="image/*"
+                        onchange="document.getElementById('avata-user').src = window.URL.createObjectURL(this.files[0])" />
+                    Chọn ảnh</button>
+
+                <input type="button" value="cập nhật thay đổi" class="btn-update-avata">
+
+
+                <div class="d-flex flex-row justify-content-center align-items-center mt-3"> <span class="number">
+                        <span class="follow">bạn đã là thành viên của chúng tôi</span></span> </div>
+                <div class=" d-flex mt-2"> <button class="btn1 btn-dark">Xem thông tin bên dưới</button> </div>
+                <div class="text mt-3"> <span>Cảm ơn bạn vì trở thành thành viên của chúng tớ.<br><br> Có điều gì sai
+                        sót,
+                        góp ý cho tớ nhé ! </span> </div>
+
+                <div class=" px-2 rounded mt-4 date "> <span class="join">Ngày tạo tài khoản</span> </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+<form>
+    <ul class="form-style-1">
+        <li><label>Tên<span class="required">*</span></label>
+            <input type="text" name="field1" class="field-divided vl-name" placeholder="Nguyen Van A" />
+            <p class="err-name" style="color: red"></p>
+            <input type="text" name="field2" class="field-divided vl-phone" placeholder="Số điện thoại" />
+            <p class="err-phone" style="color: red"></p>
+
+        </li>
+        <li>
+            <label>Email <span class="required">*</span></label>
+            <p class="err-mail" style="color: red"></p>
+
+            <input type="email" disabled name="field3" class="field-long vl-email" />
+        </li>
+        <li>
+            <label>Địa chỉ <span class="required">*</span></label>
+            <textarea name="field5" id="field5" class="field-long field-textarea vl-address"></textarea>
+            <p class="err-address" style="color: red"></p>
+        </li>
+        <li>
+            <input type="button" value="cập nhật" class="btn-update-inf-account" />
+        </li>
+    </ul>
+</form>
+<style>
+    .form-style-1 {
+        margin: 10px auto;
+        max-width: 400px;
+        padding: 20px 12px 10px 20px;
+        font: 13px "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    }
+
+    .form-style-1 li {
+        padding: 0;
+        display: block;
+        list-style: none;
+        margin: 10px 0 0 0;
+    }
+
+    .form-style-1 label {
+        margin: 0 0 3px 0;
+        padding: 0px;
+        display: block;
+        font-weight: bold;
+    }
+
+    .form-style-1 input[type=text],
+    .form-style-1 input[type=date],
+    .form-style-1 input[type=datetime],
+    .form-style-1 input[type=number],
+    .form-style-1 input[type=search],
+    .form-style-1 input[type=time],
+    .form-style-1 input[type=url],
+    .form-style-1 input[type=email],
+    textarea,
+    select {
+        box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        border: 1px solid #BEBEBE;
+        padding: 7px;
+        margin: 0px;
+        -webkit-transition: all 0.30s ease-in-out;
+        -moz-transition: all 0.30s ease-in-out;
+        -ms-transition: all 0.30s ease-in-out;
+        -o-transition: all 0.30s ease-in-out;
+        outline: none;
+    }
+
+    .form-style-1 input[type=text]:focus,
+    .form-style-1 input[type=date]:focus,
+    .form-style-1 input[type=datetime]:focus,
+    .form-style-1 input[type=number]:focus,
+    .form-style-1 input[type=search]:focus,
+    .form-style-1 input[type=time]:focus,
+    .form-style-1 input[type=url]:focus,
+    .form-style-1 input[type=email]:focus,
+    .form-style-1 textarea:focus,
+    .form-style-1 select:focus {
+        -moz-box-shadow: 0 0 8px #88D5E9;
+        -webkit-box-shadow: 0 0 8px #88D5E9;
+        box-shadow: 0 0 8px #88D5E9;
+        border: 1px solid #88D5E9;
+    }
+
+    .form-style-1 .field-divided {
+        width: 49%;
+    }
+
+    .form-style-1 .field-long {
+        width: 100%;
+    }
+
+    .form-style-1 .field-select {
+        width: 100%;
+    }
+
+    .form-style-1 .field-textarea {
+        height: 100px;
+    }
+
+    .form-style-1 input[type=submit],
+    .form-style-1 input[type=button] {
+        background: #4B99AD;
+        padding: 8px 15px 8px 15px;
+        border: none;
+        color: #fff;
+    }
+
+    .form-style-1 input[type=submit]:hover,
+    .form-style-1 input[type=button]:hover {
+        background: #4691A4;
+        box-shadow: none;
+        -moz-box-shadow: none;
+        -webkit-box-shadow: none;
+    }
+
+    .form-style-1 .required {
+        color: red;
+    }
+</style>
+
+
+<style>
+    * {
+        font-size: 15px;
+        font-family: 'Dosis', sans-serif;
+    }
+
+    .card {
+        width: 100%;
+        background-color: #efefef;
+        border: none;
+        cursor: pointer;
+        transition: all 0.5s;
+    }
+
+    .image img {
+        transition: all 0.5s
+    }
+
+    .card:hover .image img {
+        transform: scale(1.5)
+    }
+
+    .btn {
+        height: 140px;
+        width: 140px;
+        border-radius: 50%
+    }
+
+    .name {
+        font-size: 22px;
+        font-weight: bold
+    }
+
+    .idd {
+        font-size: 14px;
+        font-weight: 600
+    }
+
+    .idd1 {
+        font-size: 12px
+    }
+
+    .number {
+        font-size: 22px;
+        font-weight: bold
+    }
+
+    .follow {
+        font-size: 12px;
+        font-weight: 500;
+        color: #444444
+    }
+
+    .btn1 {
+        height: 40px;
+        width: 150px;
+        border: none;
+        background-color: #000;
+        color: #aeaeae;
+        font-size: 15px
+    }
+
+    .text span {
+        font-size: 13px;
+        color: #545454;
+        font-weight: 500
+    }
+
+    .icons i {
+        font-size: 19px
+    }
+
+    hr .new1 {
+        border: 1px solid
+    }
+
+    .join {
+        font-size: 14px;
+        color: #a0a0a0;
+        font-weight: bold
+    }
+
+    .date {
+        background-color: #ccc
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>

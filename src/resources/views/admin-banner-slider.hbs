@@ -1,0 +1,461 @@
+{{!-- js for this page --}}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+{{!-- sweet alert --}}
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- jsDeliver -->
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.lazy/1.7.9/jquery.lazy.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.lazy/1.7.9/jquery.lazy.plugins.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.2.0/lazysizes.min.js" async=""></script>
+<div class="layout"
+    style="position: fixed; width: 100%; height: 100%; top: 0; background-color: rgba(75, 74, 74, 0.5); z-index: 100; display: none; ">
+    <div class="lds-roller" style="position: absolute; top: 50%;
+    left: 40%;
+    transform: translate(-50%, -50%);">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+</div>
+<style>
+    .lds-roller {
+        display: inline-block;
+        position: relative;
+        width: 80px;
+        height: 80px;
+    }
+
+    .lds-roller div {
+        animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        transform-origin: 40px 40px;
+    }
+
+    .lds-roller div:after {
+        content: " ";
+        display: block;
+        position: absolute;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #fff;
+        margin: -4px 0 0 -4px;
+    }
+
+    .lds-roller div:nth-child(1) {
+        animation-delay: -0.036s;
+    }
+
+    .lds-roller div:nth-child(1):after {
+        top: 63px;
+        left: 63px;
+    }
+
+    .lds-roller div:nth-child(2) {
+        animation-delay: -0.072s;
+    }
+
+    .lds-roller div:nth-child(2):after {
+        top: 68px;
+        left: 56px;
+    }
+
+    .lds-roller div:nth-child(3) {
+        animation-delay: -0.108s;
+    }
+
+    .lds-roller div:nth-child(3):after {
+        top: 71px;
+        left: 48px;
+    }
+
+    .lds-roller div:nth-child(4) {
+        animation-delay: -0.144s;
+    }
+
+    .lds-roller div:nth-child(4):after {
+        top: 72px;
+        left: 40px;
+    }
+
+    .lds-roller div:nth-child(5) {
+        animation-delay: -0.18s;
+    }
+
+    .lds-roller div:nth-child(5):after {
+        top: 71px;
+        left: 32px;
+    }
+
+    .lds-roller div:nth-child(6) {
+        animation-delay: -0.216s;
+    }
+
+    .lds-roller div:nth-child(6):after {
+        top: 68px;
+        left: 24px;
+    }
+
+    .lds-roller div:nth-child(7) {
+        animation-delay: -0.252s;
+    }
+
+    .lds-roller div:nth-child(7):after {
+        top: 63px;
+        left: 17px;
+    }
+
+    .lds-roller div:nth-child(8) {
+        animation-delay: -0.288s;
+    }
+
+    .lds-roller div:nth-child(8):after {
+        top: 56px;
+        left: 12px;
+    }
+
+    @keyframes lds-roller {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+<div class="all-image-drive"
+    style="position: fixed; width: 80%; height: 80%; top: 58%;
+    border-left: solid 2px rgb(5, 92, 62);
+    padding: 3px;
+    left: 50%;
+    transform: translate(-50%, -50%);  background-color: rgba(255, 255, 255); z-index: 101; display: none; flex-wrap: wrap; overflow-y: scroll; justify-content: space-between;">
+    {{!-- contain all iamge product --}}
+</div>
+<div class="content-wrapper">
+    <div class="row">
+        <div class="col-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Quản lí ảnh ở banner slider các trang</h4>
+                    <p class="card-description">
+                        banner, slider
+                    </p>
+                    <form class="forms-sample">
+                        <div class="form-group">
+                            <label for="exampleInputName1">Ví dụ</label>
+                            <img src="user/images/340471372_955365068804671_8975163765921053727_n.png" width="100%"
+                                alt="">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail3">Tiêu đề</label>
+                            <p class="err-title-banner" style="color: red;"></p>
+                            <input type="email" class="form-control title-banner" id="exampleInputEmail3"
+                                placeholder="Welcome">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleTextarea1">Nội dung</label>
+                            <p class="err-content-banner" style="color: red;"></p>
+
+                            <textarea class="form-control content-banner" id="exampleTextarea1" rows="4"
+                                style="min-height: 100px;"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleTextarea1">Ảnh banner(Nên chỉ có 3 hình)</label>
+                            <p class="err-image-banner" style="color: red;"></p>
+                            <button type="button" class="btn btn-inverse-success btn-fw btn-image-banner">Chọn từ kho
+                                ảnh công ty chứa
+                                banner</button>
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleTextarea1">Banner đã chọn</label>
+                            <div class="contain-image-banner"
+                                style="width: 100%; display: flex-wrap: wrap; min-height: 20px">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleTextarea1">Slider dưới footer(Để các ảnh đẹp về sản phẩm)</label>
+                            <p class="err-image-banner" style="color: red;"></p>
+                            <button type="button" class="btn btn-inverse-success btn-fw btn-image-slider">Chọn ảnh
+                                slider</button>
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleTextarea1">Slider đã chọn</label>
+
+                            <div class="contain-image-slider"
+                                style="width: 100%; display: flex-wrap: wrap; min-height: 20px">
+                            </div>
+                        </div>
+
+
+
+
+                        <button type="button" class="btn btn-primary me-2 btn-update-banner-home">Cập nhật</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        var arr_img_banner = [];
+        var arr_img_slider = [];
+        inforCompany()
+        //function get infor company
+        function inforCompany() {
+            $(".layout").css('display', 'block')
+            //get-inf-company
+            $.ajax({
+                url: '/admin/get-inf-company',
+                async: true,
+                type: 'GET',
+                dataType: "json",
+                encode: true,
+            }).done(function (data) {
+                arr_img_banner = data.home.banner.image;
+                arr_img_slider = data.home.slider.image;
+                $(".content-banner").val(data.home.banner.content)
+                $(".title-banner").val(data.home.banner.title)
+                console.log(data)
+
+
+            }).then(() => {
+                let html = "";
+                arr_img_banner.map((item) => {
+                    html += `<img data-id="` + item.idImage + `" class ="banner-choosed" src="` + item.urlLinkImage + `" style="width: 100px; margin: 2px 2px 0 0 ;  cursor: pointer; height: auto;" alt="">`
+                })
+                let html_sl = "";
+                arr_img_slider.map((item) => {
+                    html_sl += `<img data-id="` + item.idImage + `" class ="slider-choosed" src="` + item.urlLinkImage + `" style="width: 100px; margin: 2px 2px 0 0 ;  cursor: pointer; height: auto;" alt="">`
+                })
+
+                $(".contain-image-banner").html(html);
+                $(".contain-image-slider").html(html_sl);
+
+                canncelChoosedBanner();
+                canncelChoosedSlider()
+                $(".layout").hide();
+
+            })
+        }
+
+        $(".btn-image-banner").click(function () {
+            $(".layout").css('display', 'block')
+            $.ajax({
+                url: '/admin/all-image-company',
+                async: true,
+                type: 'GET',
+                dataType: "json",
+                encode: true,
+            }).done(function (data) {
+                let html = "";
+                data.map((item) => {
+                    html += `<div class="contain-image" data-id="` + item.id + `"
+        style="width: 18%; height: 200px; position: relative; margin-left: 2px; margin-top: 2px">
+        <img src="`+ item.thumbnailLink + `" 
+            style="object-fit: cover; height: 100%; position: absolute; width: 100%;" alt="">
+        <button data-id="` + item.id + `" data-name="` + item.name + `" style="position: absolute; top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);" type="button" class="btn btn-outline-success btn-fw btn-choose-this-banner">Chọn ảnh này</button>
+    </div>`;
+                })
+                $(".all-image-drive").html(html)
+            }).then(() => {
+                $(".all-image-drive").css('display', 'block');
+            }).then(() => {
+                $(".btn-choose-this-banner").click(function () {
+                    let idImage = $(this).attr('data-id');
+                    let nameImage = $(this).attr('data-name');
+                    arr_img_banner.push({
+                        idImage: idImage,
+                        nameImage: nameImage,
+                        urlLinkImage: `https://drive.google.com/uc?id=` + idImage + ``
+                    })
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Your work has been saved',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                    let html = ``
+                    arr_img_banner.map((item) => {
+                        html += `<img data-id="` + item.idImage + `" class ="banner-choosed" src="` + item.urlLinkImage + `" style="width: 100px; margin: 2px 2px 0 0 ;  cursor: pointer; height: auto;" alt="">`
+                    })
+                    $(".contain-image-banner").html(html);
+                    canncelChoosedBanner()
+                })
+            })
+        })
+
+        //
+        $(".btn-image-slider").click(function () {
+            $(".layout").css('display', 'block')
+            $.ajax({
+                url: '/admin/all-image-company',
+                async: true,
+                type: 'GET',
+                dataType: "json",
+                encode: true,
+            }).done(function (data) {
+                let html = "";
+                data.map((item) => {
+                    html += `<div class="contain-image" data-id="` + item.id + `"
+        style="width: 18%; height: 200px; position: relative; margin-left: 2px; margin-top: 2px">
+        <img src="`+ item.thumbnailLink + `" 
+            style="object-fit: cover; height: 100%; position: absolute; width: 100%;" alt="">
+        <button data-id="` + item.id + `" data-name="` + item.name + `" style="position: absolute; top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);" type="button" class="btn btn-outline-success btn-fw btn-choose-this-slider">Chọn ảnh này</button>
+    </div>`;
+                })
+                $(".all-image-drive").html(html)
+            }).then(() => {
+                $(".all-image-drive").css('display', 'block');
+            }).then(() => {
+                $(".btn-choose-this-slider").click(function () {
+                    let idImage = $(this).attr('data-id');
+                    let nameImage = $(this).attr('data-name');
+                    arr_img_slider.push({
+                        idImage: idImage,
+                        nameImage: nameImage,
+                        urlLinkImage: `https://drive.google.com/uc?id=` + idImage + ``
+                    })
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Your work has been saved',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                    let html = ``
+                    arr_img_slider.map((item) => {
+                        html += `<img data-id="` + item.idImage + `" class ="slider-choosed" src="` + item.urlLinkImage + `" style="width: 100px; margin: 2px 2px 0 0 ;  cursor: pointer; height: auto;" alt="">`
+                    })
+                    $(".contain-image-slider").html(html);
+                    canncelChoosedSlider()
+
+                })
+            })
+        })
+
+        //fun cancel choose
+        function canncelChoosedBanner() {
+            $(".banner-choosed").click(function () {
+                let idImage = $(this).attr('data-id');
+                for (let i = 0; i < arr_img_banner.length; i++) {
+                    if (arr_img_banner[i].idImage === idImage) {
+                        arr_img_banner.splice(i, 1);
+                        break;
+                    }
+                }
+                let ud_html = ``
+                arr_img_banner.map((item) => {
+                    ud_html += `<img data-id="` + item.idImage + `" class ="banner-choosed" src="` + item.urlLinkImage + `" style="width: 100px; margin: 2px 2px 0 0 ;  cursor: pointer; height: auto;" alt="">`
+                })
+                $(".contain-image-banner").html(ud_html);
+                canncelChoosedBanner()
+            })
+
+
+        }
+        //function cancel choose slider
+        function canncelChoosedSlider() {
+            $(".slider-choosed").click(function () {
+                let idImage = $(this).attr('data-id');
+                for (let i = 0; i < arr_img_slider.length; i++) {
+                    if (arr_img_slider[i].idImage === idImage) {
+                        arr_img_slider.splice(i, 1);
+                        break;
+                    }
+                }
+                let ud_html = ``
+                arr_img_slider.map((item) => {
+                    ud_html += `<img data-id="` + item.idImage + `" class ="slider-choosed" src="` + item.urlLinkImage + `" style="width: 100px; margin: 2px 2px 0 0 ;  cursor: pointer; height: auto;" alt="">`
+                })
+                $(".contain-image-slider").html(ud_html);
+                canncelChoosedSlider()
+            })
+        }
+        //update banner home
+        $(".btn-update-banner-home").click(function () {
+            let titleBanner = $(".title-banner").val()
+            let contentBanner = $(".content-banner").val()
+
+            let accept = true;
+            $(".err-title-banner").html(" ")
+            $(".err-content-banner").html(" ")
+            $(".err-image-banner").html(" ")
+
+            let form = new FormData();
+            form = {
+                _id: '64312a497270f261127e15ad',
+                obj: {
+                    home: {
+                        banner: {
+                            title: titleBanner,
+                            content: contentBanner,
+                            image: arr_img_banner
+                        },
+                        slider: {
+                            image: arr_img_slider
+                        }
+                    }
+                }
+
+            }
+            if (titleBanner == "") {
+                $(".err-title-banner").html("chưa điền tiêu đề banner!");
+                accept = false;
+            }
+            if (contentBanner == "") {
+                $(".err-content-banner").html("chưa điền nội dung banner!");
+                accept = false;
+            }
+            if (arr_img_banner.length == 0) {
+                $(".err-image-banner").html("chưa chọn ảnh banner!");
+                accept = false;
+            }
+
+            if (accept == true) {
+                //update
+                $(".layout").css('display', 'block');
+
+                //call ajax requesst post
+                $.ajax({
+                    url: '/admin/update-inf-company',
+                    async: true,
+                    type: 'POST',
+                    dataType: "json",
+                    data: form,
+                    encode: true,
+                }).done(function (data) {
+                    if (data == 'success') {
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'Cập nhật thành công',
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                        inforCompany()
+                        $(".layout").hide();
+                    } else {
+                        console.log(data)
+                    }
+                })
+            }
+
+        })
+        $(".layout").click(function () {
+            $(this).hide();
+            $(".all-image-drive").hide()
+        })
+    })
+    //update image company
+
+</script>

@@ -1,0 +1,98 @@
+{{!-- js for this page --}}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+{{!-- sweet alert --}}
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- jsDeliver -->
+<script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@17.8.3/dist/lazyload.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.2.0/lazysizes.min.js" async=""></script>
+
+<script>
+    $(document).ready(function () {
+        //validation forn before submit
+        $(".btn-submit-form-login-admin").click(function () {
+            let adUsername = $(".ad-username").val();
+            let adPassword = $(".ad-password").val();
+            $(".err-username").html(" ")
+            $(".err-password").html(" ")
+            $(".err-req").html(" ")
+            if (adUsername == "") {
+                $(".err-username").html('Tên đăng nhập đang trống !');
+            }
+            if (adPassword == "") {
+                $(".err-password").html('Mật khẩu đang trống !');
+            }
+            if (adUsername != "" || adPassword != "") {
+                //submit form
+                //ajax post json data
+                $.ajax({
+                    url: '#',
+                    type: 'POST',
+                    data: {
+                        username: adUsername,
+                        password: adPassword
+                    },
+                    dataType: "json",
+                    encode: true,
+                }).done(function (data) {
+                    if (data.status === false) {
+                        $(".err-req").html(data.mess);
+                    }
+                    /*redirect đến home admin*/
+                    else if (data.status === true) {
+                        window.location.href = './admin';
+                    }
+                })
+            }
+        })
+    })
+</script>
+<div class="container-fluid page-body-wrapper full-page-wrapper">
+    <div class="content-wrapper d-flex align-items-center auth px-0">
+        <div class="row w-100 mx-0">
+            <div class="col-lg-4 mx-auto">
+                <div class="auth-form-light text-left py-5 px-4 px-sm-5">
+                    <div class="brand-logo">
+                        <img src="../images/logo.svg" alt="logo">
+                    </div>
+                    <h4>Xin chào! đây là trang quản lí</h4>
+                    <h6 class="fw-light">Đăng nhập để tiếp tục sử dụng.</h6>
+                    <p style="color: red" class="err-req"></p>
+
+                    {{!-- request form data to login --}}
+                    <form class="pt-3">
+                        <div class="form-group">
+                            <p class="err-username" style="color: red"></p>
+                            <input type="text" name="username" class="form-control form-control-lg ad-username"
+                                id="exampleInputEmail1" placeholder="Tên đăng nhập">
+                        </div>
+                        <div class="form-group">
+                            <p class="err-password" style="color: red"></p>
+                            <input type="password" name="password" class="form-control form-control-lg ad-password"
+                                id="exampleInputPassword1" placeholder="Mật khẩu">
+                        </div>
+                        <div class="mt-3">
+                            <button type="button"
+                                class="btn btn-block btn-primary btn-submit-form-login-admin btn-lg font-weight-medium auth-form-btn">Đăng
+                                nhập</button>
+                        </div>
+                        <div class="my-2 d-flex justify-content-between align-items-center">
+                            <div class="form-check">
+                                <label class="form-check-label text-muted">
+                                    <input type="checkbox" class="form-check-input">
+                                    Giữ luôn đăng nhập
+                                </label>
+                            </div>
+                            <a href="#" class="auth-link text-black">Quên mật khẩu, liên hệ qua mail:
+                                nhduong.20it7@vku.udn.vn</a>
+                        </div>
+                        <div class="text-center mt-4 fw-light">
+                            Admin login
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- content-wrapper ends -->
+</div>

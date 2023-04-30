@@ -1,0 +1,384 @@
+<!-- jsDeliver -->
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.lazy/1.7.9/jquery.lazy.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.lazy/1.7.9/jquery.lazy.plugins.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.2.0/lazysizes.min.js" async=""></script>
+{{!-- js for this page --}}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+{{!-- sweet alert --}}
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $(document).ready(function () {
+        loadCart()
+        function loadCart() {
+            $(".layout").css('display', 'block')
+            $.ajax({
+                url: '/get-cart-user',
+                async: true,
+                type: 'GET',
+                dataType: "json",
+                encode: true,
+                responseType: 'application/json'
+            }).done(function (data) {
+
+                console.log(data)
+                let html = "";
+                let subTotal = 0;
+                if (data.data.length == 0) {
+                    $("#tbl_carts").html(`Chưa có sản phẩm nào trong giỏ hàng, bấm MUA THÊM`)
+                }
+                if (data.data.length != 0) {
+                    data.data.map((cart) => {
+                        subTotal += (parseFloat(cart.count) * parseFloat(cart.price));
+                        html += ` <tr>
+                                <td class="thumbnail-img">
+                                    <a href="#">
+                                        <img class="img-fluid" src="`+ cart.product.prod.image[0].urlLinkImage + `" alt="" />
+                                    </a>
+                                </td>
+                                <td class="name-pr">
+                                    <a href="#">
+                                       `+ cart.product.prod.nameProduct + `
+                                    </a>
+                                </td>
+                                <td class="price-pr">
+                                    <p>`+ parseFloat(cart.price).toLocaleString('en-US', { style: 'currency', currency: 'VND' }) + `</p>
+                                </td>
+                                <td class="quantity-box">`+ cart.count + `
+                                      </td>
+                                <td class="total-pr">
+                                    <p class="total-prod">`+ (parseInt(cart.count) * parseInt(cart.price)).toLocaleString('en-US', { style: 'currency', currency: 'VND' }) + `</p>
+                                </td>
+                                <td class="remove-pr">
+                                    <a href="#">
+                                        <i class="fas fa-times"></i>
+                                    </a>
+                                </td>
+                            </tr>`;
+                    })
+                    let html_order = ` <div class="order-box">
+                    <h3>Đơn hàng</h3>
+                    <div class="d-flex">
+                        <h4>Tổng toàn bộ</h4>
+                        <div class="ml-auto font-weight-bold"> `+ subTotal.toLocaleString('en-US', { style: 'currency', currency: 'VND' }) + `</div>
+                    </div>
+                    <div class="d-flex">
+                        <h4>Giảm giá</h4>
+                        <div class="ml-auto font-weight-bold"> 0</div>
+                    </div>
+                    <hr class="my-1">
+                    <div class="d-flex">
+                        <h4>Mã giảm giá</h4>
+                        <div class="ml-auto font-weight-bold"> 0</div>
+                    </div>
+                    <div class="d-flex">
+                        <h4>Phí ship</h4>
+                        <div class="ml-auto font-weight-bold"> : 15.000 </div>
+                    </div>
+                    <hr>
+                    <div class="d-flex gr-total">
+                        <h5>Thành tiền</h5>
+                        <div class="ml-auto h5">`+ (subTotal + 15000).toLocaleString('en-US', { style: 'currency', currency: 'VND' }) + `</div>
+                    </div>
+                    <hr>
+                </div>
+                <div class="col-12 d-flex shopping-box"><a href="/checkout" class="ml-auto btn hvr-hover">Thanh toán</a>
+            </div>
+                `;
+                    $(".order").html(html_order);
+                    console.log(data);
+                    $("#tbl_carts").html(html)
+                }
+
+                $(".layout").hide();
+            })
+        }
+
+        //function load all bill 
+        loadAllBill();
+        function loadAllBill() {
+            $.ajax({
+                url: '/get-all-bill',
+                async: true,
+                type: 'GET',
+                dataType: "json",
+                encode: true,
+                responseType: 'application/json'
+            }).done(function (data) {
+                console.log('123', data)
+                let html = "";
+                let i = 0;
+                data.data.map((bill) => {
+                    let total = 0;
+
+                    i++;
+                    html += ` <tr>
+                                <td>`+ i + `</td>
+                                <td style="display: flex; flex-direction: column">
+                                  `;
+
+                    bill.products.map((prod) => {
+                        if (prod.product) {
+                            total += parseFloat(prod.price) * parseFloat(prod.count) + 15000;
+                            html += `
+                        <div  style="display: flex; margin-top: 3px ">
+                        <img src="` + prod.product.image[0].urlLinkImage + `" style="width: 40px; margin-right: 5px"/> <p style=" margin-right: 5px"> sản phẩm: ` + prod.product.nameProduct + `<p/>
+                        <b>Giá: `+ parseFloat(prod.price).toLocaleString('en-US', { style: 'currency', currency: 'VND' }) + `</b> <i>-số lượng: ` + prod.count + `</i> </div>`
+                        }
+                        else {
+                            html += `<p style="color: red">sản phẩm này không tồn tại trên shop nữa</p>`
+
+                        }
+
+                    })
+
+
+
+
+                    html += `
+                                </td>
+                                <td class="name-pr">
+                                    <b>
+                                       `+ bill.inf.nameSend + `
+                                    </b>
+                                       <p> Tên người nhận: `+ bill.inf.recipient + `</p>
+                                       <u>Số đt: `+ bill.inf.phone + `</u>
+                                </td>
+                                <td class="total-pr">
+                                       <p> `+ bill.inf.addressRecevie + `</p>
+                                </td>
+                                <td class="remove-pr">
+                                    <b> `+ total.toLocaleString('en-US', { style: 'currency', currency: 'VND' }) + `</b>
+                                </td>
+                                   <td class="total-pr">
+                                       `;
+                    if (bill.status == false) {
+                        html += `<p style="color: red" >Chưa xác nhận</p>`
+                    } else {
+                        html += `<p style="color: green">Đã  xác nhận</p>`;
+                    }
+                    if (bill.shipping == false) {
+                        html += `<p style="color: red">Chưa vận chuyển</p>`
+                    } else {
+                        html += `<p style="color: green">Đã  vận chuyển</p>`;
+                    }
+
+                    if (bill.payment == false) {
+                        html += `<p style="color: red">Chưa thanh toán</p>`
+                    } else {
+                        html += `<p style="color: green">Đã thanh toán</p> `;
+                    }
+
+
+                    html += `
+                                </td>
+                                <td>`+ bill.createdAt + `</td>
+                            </tr>`;
+
+                })
+                $("#tbl_bill").html(html);
+            })
+        }
+    })
+</script>
+<div class="layout"
+    style="position: fixed; width: 100%; height: 100%; top: 0; background-color: rgba(75, 74, 74, 0.5); z-index: 100; display: none; ">
+    <div class="lds-roller" style="position: absolute; top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+</div>
+<div class="cart-box-main">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="table-main table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Ảnh sản phẩm</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Giá</th>
+                                <th>Số lượng</th>
+                                <th>Tổng</th>
+                                <th>Xoá</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbl_carts">
+
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="row my-5">
+            <div class="col-lg-6 col-sm-6">
+                <div class="coupon-box">
+                    {{!-- <div class="input-group input-group-sm">
+                        <input class="form-control" placeholder="Enter your coupon code" aria-label="Coupon code"
+                            type="text">
+                        <div class="input-group-append">
+                            <button class="btn btn-theme" type="button">Apply Coupon</button>
+                        </div>
+                    </div> --}}
+                </div>
+            </div>
+            <div class="col-lg-6 col-sm-6">
+                <div class="update-box">
+                    <a href="/shop" style="padding: 15px ;background-color:rgb(235, 221, 191);">Mua thêm</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row my-5">
+            <div class="col-lg-8 col-sm-12"></div>
+            <div class="col-lg-4 col-sm-12 order">
+
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <h2>Các đơn đã đặt và trạng thái đơn</h2>
+                <div class="table-main table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Sản phẩm</th>
+                                <th>Người gửi</th>
+                                <th>Địa chỉ nhận hàng</th>
+                                <th>Tổng tiền</th>
+                                <th>Trạng thái</th>
+
+                                <th>Thời gian</th>
+
+                            </tr>
+                        </thead>
+                        <tbody id="tbl_bill">
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Cart -->
+<style>
+    .lds-roller {
+        display: inline-block;
+        position: relative;
+        width: 80px;
+        height: 80px;
+    }
+
+    .lds-roller div {
+        animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        transform-origin: 40px 40px;
+    }
+
+    .lds-roller div:after {
+        content: " ";
+        display: block;
+        position: absolute;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #fff;
+        margin: -4px 0 0 -4px;
+    }
+
+    .lds-roller div:nth-child(1) {
+        animation-delay: -0.036s;
+    }
+
+    .lds-roller div:nth-child(1):after {
+        top: 63px;
+        left: 63px;
+    }
+
+    .lds-roller div:nth-child(2) {
+        animation-delay: -0.072s;
+    }
+
+    .lds-roller div:nth-child(2):after {
+        top: 68px;
+        left: 56px;
+    }
+
+    .lds-roller div:nth-child(3) {
+        animation-delay: -0.108s;
+    }
+
+    .lds-roller div:nth-child(3):after {
+        top: 71px;
+        left: 48px;
+    }
+
+    .lds-roller div:nth-child(4) {
+        animation-delay: -0.144s;
+    }
+
+    .lds-roller div:nth-child(4):after {
+        top: 72px;
+        left: 40px;
+    }
+
+    .lds-roller div:nth-child(5) {
+        animation-delay: -0.18s;
+    }
+
+    .lds-roller div:nth-child(5):after {
+        top: 71px;
+        left: 32px;
+    }
+
+    .lds-roller div:nth-child(6) {
+        animation-delay: -0.216s;
+    }
+
+    .lds-roller div:nth-child(6):after {
+        top: 68px;
+        left: 24px;
+    }
+
+    .lds-roller div:nth-child(7) {
+        animation-delay: -0.252s;
+    }
+
+    .lds-roller div:nth-child(7):after {
+        top: 63px;
+        left: 17px;
+    }
+
+    .lds-roller div:nth-child(8) {
+        animation-delay: -0.288s;
+    }
+
+    .lds-roller div:nth-child(8):after {
+        top: 56px;
+        left: 12px;
+    }
+
+    @keyframes lds-roller {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>

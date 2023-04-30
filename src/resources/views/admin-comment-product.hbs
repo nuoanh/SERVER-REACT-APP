@@ -1,0 +1,304 @@
+{{!-- --}}
+{{!-- js for this page --}}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+{{!-- sweet alert --}}
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- jsDeliver -->
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.lazy/1.7.9/jquery.lazy.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.lazy/1.7.9/jquery.lazy.plugins.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.2.0/lazysizes.min.js" async=""></script>
+
+
+<script>
+    $(document).ready(function () {
+        loadData();
+        function loadData() {
+            $(".layout").css('display', 'block');
+            $.ajax({
+                url: '/admin/get-all-comment',
+                type: 'GET',
+                dataType: "json",
+                encode: true,
+            }).done(function (data) {
+                let html = '';
+                let i = 0;
+                data.sort(function (a, b) { return a.createdAt - b.createdAt }).map((cmt) => {
+                    i++
+                    html += `  <tr>
+                            <td>`+ i + `</td>
+
+                            <td>`;
+                    if (cmt.product) {
+                        cmt.product.image.map((img) => {
+                            html += ` <img src = ` + img.urlLinkImage + ` />`;
+                        })
+                    } else {
+                        html += '<p style="color: red">sp ko tồn tại</p>'
+                    }
+
+
+
+
+                    html += ` </td>
+                            <td>`;
+
+                    if (cmt.product) {
+                        html += `<a href="../product/` + cmt.product.slug + `" target="_blank"> ` + cmt.product.nameProduct + `</a>`
+                    } else {
+                        html += `sản phẩm này không tồn tại`
+                    }
+
+                    html += `</td>
+                            <td>
+                             `+ cmt.account.name + `
+                            </td>
+                            <td>
+                                `+ cmt.content + `
+                            </td>
+                            <td>
+                                `+ cmt.createdAt + `
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-inverse-info btn-fw btn-sm btn-response"
+                                    data-id="`+ cmt._id + `">Phản hồi</button>
+                                    <div class="form-group">
+                                        <label for="exampleTextarea1 ">Nhập nội dung phản hồi</label>
+                                        <p class="err-content-respose" style="color: red" ></p>
+                                        <textarea class="form-control content-respose-`+ cmt._id + `"  style="height: 100px;" id="exampleTextarea1" rows="4"></textarea>
+                                    </div>
+                            </td>
+                            <td>
+                            <ul>
+                                `;
+                    if (cmt.response) {
+                        let arr_response = cmt.response;
+                        arr_response.map((res) => {
+                            html += `<li>Thời gian: ` + res.time + `, </br> <b>Nội dung:  ` + res.content + `</b></li>`;
+                        })
+                    }
+                    html += `</ul>
+                            </td>
+
+                        </tr>`;
+                })
+                $("#tbl_all_comment").html(html)
+                $(".layout").hide();
+            }).then(() => {
+                $(".btn-response").click(function () {
+                    $(".layout").css('display', 'block');
+                    let dataId = $(this).attr('data-id');
+                    let content = $('.content-respose-' + dataId + '').val();
+                    if (content == "") {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi trống',
+                            text: 'Chưa nhập nội dung phản hồi!',
+                            footer: '<a href="">Bắt buộc phải nhập nội dung phản hồi cho khách hàng. </a>'
+                        })
+                    } else {
+                        let form = new FormData();
+                        form = {
+                            _id: dataId,
+                            response: {
+                                time: new Date(),
+                                content: content
+                            }
+                        }
+
+                        $.ajax({
+                            url: '/admin/response-comment',
+                            type: 'POST',
+                            dataType: "json",
+                            data: form,
+                            encode: true,
+                        }).done(function (data) {
+                            if (data == 'success') {
+                                $(".layout").hide();
+                                Swal.fire({
+                                    position: 'top-end',
+                                    icon: 'success',
+                                    title: 'Phản hồi thành công',
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                })
+                                $('.content-respose-' + dataId + '').val(" ");
+                                loadData()
+                            } else {
+                                alert('lỗi hệ thống')
+                            }
+                        })
+
+
+                    }
+                })
+            })
+        }
+    })
+</script>
+<style>
+    .lds-roller {
+        display: inline-block;
+        position: relative;
+        width: 80px;
+        height: 80px;
+    }
+
+    .lds-roller div {
+        animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        transform-origin: 40px 40px;
+    }
+
+    .lds-roller div:after {
+        content: " ";
+        display: block;
+        position: absolute;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #fff;
+        margin: -4px 0 0 -4px;
+    }
+
+    .lds-roller div:nth-child(1) {
+        animation-delay: -0.036s;
+    }
+
+    .lds-roller div:nth-child(1):after {
+        top: 63px;
+        left: 63px;
+    }
+
+    .lds-roller div:nth-child(2) {
+        animation-delay: -0.072s;
+    }
+
+    .lds-roller div:nth-child(2):after {
+        top: 68px;
+        left: 56px;
+    }
+
+    .lds-roller div:nth-child(3) {
+        animation-delay: -0.108s;
+    }
+
+    .lds-roller div:nth-child(3):after {
+        top: 71px;
+        left: 48px;
+    }
+
+    .lds-roller div:nth-child(4) {
+        animation-delay: -0.144s;
+    }
+
+    .lds-roller div:nth-child(4):after {
+        top: 72px;
+        left: 40px;
+    }
+
+    .lds-roller div:nth-child(5) {
+        animation-delay: -0.18s;
+    }
+
+    .lds-roller div:nth-child(5):after {
+        top: 71px;
+        left: 32px;
+    }
+
+    .lds-roller div:nth-child(6) {
+        animation-delay: -0.216s;
+    }
+
+    .lds-roller div:nth-child(6):after {
+        top: 68px;
+        left: 24px;
+    }
+
+    .lds-roller div:nth-child(7) {
+        animation-delay: -0.252s;
+    }
+
+    .lds-roller div:nth-child(7):after {
+        top: 63px;
+        left: 17px;
+    }
+
+    .lds-roller div:nth-child(8) {
+        animation-delay: -0.288s;
+    }
+
+    .lds-roller div:nth-child(8):after {
+        top: 56px;
+        left: 12px;
+    }
+
+    @keyframes lds-roller {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+<div class="layout"
+    style="position: fixed; width: 100%; height: 100%; top: 0; background-color: rgba(75, 74, 74, 0.5); z-index: 100; display: none; ">
+    <div class="lds-roller" style="position: absolute; top: 50%;
+    left: 40%;
+    transform: translate(-50%, -50%);">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+</div>
+<div class="col-12 grid-margin stretch-card contain-all-prod">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Tất cả các bình luận về sản phẩm</h4>
+            <p class="card-description">
+                Danh sách tất cả các phản hồi của khách hàng <code>Admin là người xử lí</code>
+            </p>
+            <div class="table-responsive pt-3">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>
+
+                            </th>
+                            <th>
+                                Ảnh sp
+                            </th>
+                            <th>
+                                Tên sản phẩm
+                            </th>
+                            <th>
+                                Người bình luận
+                            </th>
+                            <th>
+                                Nội dung
+                            </th>
+                            <th>
+                                Thời gian
+                            </th>
+                            <th>
+                                Phản hồi
+                            </th>
+                            <th>
+                                Phản hồi trước
+                            </th>
+
+                        </tr>
+                    </thead>
+                    <tbody id="tbl_all_comment">
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

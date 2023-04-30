@@ -1,0 +1,584 @@
+{{!-- js for this page --}}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+{{!-- sweet alert --}}
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- jsDeliver -->
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.lazy/1.7.9/jquery.lazy.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.lazy/1.7.9/jquery.lazy.plugins.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.2.0/lazysizes.min.js" async=""></script>
+<div class="layout"
+    style="position: fixed; width: 100%; height: 100%; top: 0; background-color: rgba(75, 74, 74, 0.5); z-index: 100; display: none; ">
+    <div class="lds-roller" style="position: absolute; top: 50%;
+    left: 40%;
+    transform: translate(-50%, -50%);">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+</div>
+<style>
+    .lds-roller {
+        display: inline-block;
+        position: relative;
+        width: 80px;
+        height: 80px;
+    }
+
+    .lds-roller div {
+        animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        transform-origin: 40px 40px;
+    }
+
+    .lds-roller div:after {
+        content: " ";
+        display: block;
+        position: absolute;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #fff;
+        margin: -4px 0 0 -4px;
+    }
+
+    .lds-roller div:nth-child(1) {
+        animation-delay: -0.036s;
+    }
+
+    .lds-roller div:nth-child(1):after {
+        top: 63px;
+        left: 63px;
+    }
+
+    .lds-roller div:nth-child(2) {
+        animation-delay: -0.072s;
+    }
+
+    .lds-roller div:nth-child(2):after {
+        top: 68px;
+        left: 56px;
+    }
+
+    .lds-roller div:nth-child(3) {
+        animation-delay: -0.108s;
+    }
+
+    .lds-roller div:nth-child(3):after {
+        top: 71px;
+        left: 48px;
+    }
+
+    .lds-roller div:nth-child(4) {
+        animation-delay: -0.144s;
+    }
+
+    .lds-roller div:nth-child(4):after {
+        top: 72px;
+        left: 40px;
+    }
+
+    .lds-roller div:nth-child(5) {
+        animation-delay: -0.18s;
+    }
+
+    .lds-roller div:nth-child(5):after {
+        top: 71px;
+        left: 32px;
+    }
+
+    .lds-roller div:nth-child(6) {
+        animation-delay: -0.216s;
+    }
+
+    .lds-roller div:nth-child(6):after {
+        top: 68px;
+        left: 24px;
+    }
+
+    .lds-roller div:nth-child(7) {
+        animation-delay: -0.252s;
+    }
+
+    .lds-roller div:nth-child(7):after {
+        top: 63px;
+        left: 17px;
+    }
+
+    .lds-roller div:nth-child(8) {
+        animation-delay: -0.288s;
+    }
+
+    .lds-roller div:nth-child(8):after {
+        top: 56px;
+        left: 12px;
+    }
+
+    @keyframes lds-roller {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+<div class="all-image-company"
+    style="position: fixed; width: 80%; height: 80%; top: 58%;
+    border-left: solid 2px rgb(5, 92, 62);
+    padding: 3px;
+    left: 50%;
+    transform: translate(-50%, -50%);  background-color: rgba(255, 255, 255); z-index: 101; display: none; flex-wrap: wrap; overflow-y: scroll; justify-content: space-between;">
+    {{!-- contain all iamge company --}}
+</div>
+
+<div class="content-wrapper">
+    <div class="row">
+        <div class="col-12 grid-margin">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Thông tin cần thiết của công ty</h4>
+                    <form class="form-sample">
+                        <p class="card-description">
+                            Vui lòng cập nhật đầy đủ
+                        </p>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Tiêu đề</label>
+                                    <div class="col-sm-9">
+                                        <p class="err-title-blog" style="color: red"></p>
+                                        <input type="text" class="form-control title-blog">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Nội dung</label>
+
+                                    <div class="col-sm-9">
+                                        <p class="err-content-blog" style="color: red"></p>
+                                        <textarea class="form-control content-blog" id="exampleTextarea1"
+                                            style="min-height: 200px;" rows="4"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Ảnh: </label>
+
+                                    <div class="col-sm-9">
+                                        <p class="err-img-blog" style="color: red"></p>
+                                        <button type="button"
+                                            class="btn btn-outline-primary btn-fw btn-choose-image-blog">Chọn ảnh cho
+                                            bài viết</button>
+                                        <img src="" alt="" style="width: 150px;" class="show-image-blog">
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                        <p class="card-description">
+                            Thông tin về nhân sự
+                        </p>
+
+
+                        <button type="button" class="btn btn-primary btn-update-company">Cập nhật</button>
+                    </form>
+                    <div class="row">
+                        <div class="col-8 grid-margin stretch-card contain-tbl-cate">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title">Thông tin về các nhân sự trong công ty </h4>
+                                    <p class="card-description">
+                                        Có thể show ra cho người dùng thấy(đảm bảo uy
+                                        tín)<code>Admin là người thêm</code>
+                                    </p>
+                                    <div class="table-responsive pt-3">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>
+                                                        Ảnh
+                                                    </th>
+                                                    <th>
+                                                        Tên
+                                                    </th>
+                                                    <th>
+                                                        Công việc
+                                                    </th>
+                                                    <th>
+                                                        Mô tả bản thân
+                                                    </th>
+                                                    <th>
+                                                        Xóa
+                                                    </th>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tbl_people">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4 grid-margin stretch-card contain-add-cate">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title">Thêm nhân sự</h4>
+                                    <p class="card-description">
+                                        Điền đầy đủ thông tin 1 nhân sự
+                                    </p>
+                                    </p>
+                                    <form class="forms-sample">
+                                        <div class="form-group">
+                                            <label for="exampleInputName1">Tên nhân sự</label>
+                                            <p class="err-name-per" style="color: red;"></p>
+                                            <input type="text" class="form-control name-person" id="exampleInputName1"
+                                                placeholder="Tên nhân sự ">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleInputName1">Vị trí chức vụ</label>
+                                            <p class="err-role-per" style="color: red;"></p>
+                                            <input type="text" class="form-control role-person" id="exampleInputName1"
+                                                placeholder="Vị trí trong công ty">
+                                        </div>
+
+
+                                        <div class="form-group">
+                                            <label for="exampleTextarea1">Mô tả nhân sự</label>
+                                            <p class="err-des-per" style="color: red;"></p>
+                                            <textarea class="form-control descript-person" style="min-height: 200px;"
+                                                id="exampleTextarea1" rows="4"></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleTextarea1">Chọn ảnh nhân sự</label>
+                                            <p class="err-ava-per" style="color: red;"></p>
+                                            <button type="button"
+                                                class="btn btn-outline-primary btn-fw btn-choose-image-person">Chọn</button>
+                                            <img src="" class="show-image-per" width="100%" alt="">
+                                        </div>
+                                        <button type="button" class="btn btn-primary me-2 btn-add-person">Đăng</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+
+        var image_per = "";
+        var image_blog = "";
+        var title_blog = "";
+        var content_blog = "";
+        var all_people_company = [];
+        //add person
+        $(".btn-add-person").click(function () {
+            $(".err-des-per").html(" ");
+            $(".err-role-per").html(" ");
+            $(".err-name-per").html(" ");
+            $(".err-ava-per").html(" ");
+
+
+            let desPerson = $(".descript-person").val()
+            let rolePerson = $(".role-person").val()
+            let namePer = $(".name-person").val()
+
+            let permit = true;
+
+            if (desPerson == "") {
+                permit = false;
+                $(".err-des-per").html("Chưa điền mô tả cá nhân");
+            }
+            if (rolePerson == "") {
+                permit = false;
+                $(".err-role-per").html("Chưa điền vị trí trong công ty");
+            }
+            if (namePer == "") {
+                permit = false;
+                $(".err-name-per").html("Chưa điền tên cá nhân");
+            }
+            if (image_per == "") {
+                permit = false;
+                $(".err-ava-per").html("Chưa chọn ảnh cá nhân");
+            }
+            if (permit == true) {
+
+                all_people_company.push({
+                    name: namePer,
+                    descriptions: desPerson,
+                    role: rolePerson,
+                    image: image_per
+                });
+
+                $(".layout").css('display', 'block');
+                //add a person
+                updateNewPerson();
+                $(".descript-person").val(" ")
+                $(".role-person").val(" ")
+                $(".name-person").val(" ")
+                image_per = "";
+                $(".show-image-per").attr('src', image_per);
+            }
+        })
+
+        function updateNewPerson() {
+            let form = new FormData();
+            form = {
+                _id: '64312a497270f261127e15ad',
+                obj: {
+                    aboutPage: {
+                        image: image_blog,
+                        title: title_blog,
+                        content: content_blog,
+                        employee: all_people_company
+                    }
+                }
+
+            }
+            //call ajax requesst post
+            $.ajax({
+                url: '/admin/update-inf-company',
+                async: true,
+                type: 'POST',
+                dataType: "json",
+                data: form,
+                encode: true,
+            }).done(function (data) {
+                if (data == 'success') {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Cập nhật thành công',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                    $(".layout").hide();
+                    allPeople()
+                } else {
+                    console.log(data)
+                }
+            })
+        }
+
+        allPeople()
+        //show all people
+        function allPeople() {
+            $(".layout").css('display', 'block')
+            //get-inf-company
+            $.ajax({
+                url: '/admin/get-inf-company',
+                async: true,
+                type: 'GET',
+                dataType: "json",
+                encode: true,
+            }).done(function (data) {
+                let people = data.aboutPage.employee;
+                let html = "";
+                $(".title-blog").val(data.aboutPage.title)
+                $(".content-blog").val(data.aboutPage.content)
+                $(".show-image-blog").attr('src', data.aboutPage.image)
+                image_blog = data.aboutPage.image;
+                title_blog = data.aboutPage.title;
+                content_blog = data.aboutPage.content;
+                people.map((per) => {
+                    html += `<tr>
+                                    <td>
+                                        <img src="`+ per.image + `">
+                                    </td>
+                                    <td>
+                                        `+ per.name + `
+                                    </td>
+                                     <td>
+                                        `+ per.role + `
+                                    </td>
+                                     <td>
+                                        `+ per.descriptions + `
+                                    </td>
+                                    
+                                        <td><button type="button" class="btn btn-warning btn-sm btn-delete-per"  data-id="`+ per._id + `">xoá</button></td>                                   
+                                    
+                                   
+                                </tr>`;
+                })
+                $("#tbl_people").html(html);
+                all_people_company = people;
+                $(".layout").hide();
+                console.log('people', people)
+            }).then(() => {
+                $(".btn-delete-per").click(function () {
+                    let idPer = $(this).attr('data-id');
+                    for (let i = 0; i < all_people_company.length; i++) {
+                        if (all_people_company[i]._id === idPer) {
+                            all_people_company.splice(i, 1);
+                        }
+                    }
+                    updateNewPerson();
+                    console.log(all_people_company);
+                })
+            })
+        }
+        //
+
+
+        $(".layout").click(function () {
+            $(this).hide();
+            $(".all-image-company").hide();
+        })
+        //add image person
+        $(".btn-choose-image-person").click(function () {
+            $(".layout").css('display', 'block')
+            $.ajax({
+                url: '/admin/all-image-company',
+                async: true,
+                type: 'GET',
+                dataType: "json",
+                encode: true,
+            }).done(function (data) {
+                let html = "";
+                data.map((item) => {
+                    html += `<div class="contain-image" data-id="` + item.id + `"
+        style="width: 18%; height: 200px; position: relative; margin-left: 2px; margin-top: 2px">
+        <img src="`+ item.thumbnailLink + `" 
+            style="object-fit: cover; height: 100%; position: absolute; width: 100%;" alt="">
+        <button data-id="` + item.id + `" data-name="` + item.name + `" style="position: absolute; top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);" type="button" class="btn btn-outline-success btn-fw btn-choose-this-banner">Chọn ảnh này</button>
+    </div>`;
+                })
+                $(".all-image-company").html(html)
+            }).then(() => {
+                $(".all-image-company").css('display', 'flex')
+            }).then(() => {
+                $(".btn-choose-this-banner").click(function () {
+                    let idImage = $(this).attr('data-id')
+                    image_per = `https://drive.google.com/uc?id=` + idImage + ``;
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Your work has been saved',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                    $(".show-image-per").attr('src', image_per);
+                })
+            })
+        })
+
+        //add image blog
+        $(".btn-choose-image-blog").click(function () {
+            $(".layout").css('display', 'block')
+            $.ajax({
+                url: '/admin/all-image-company',
+                async: true,
+                type: 'GET',
+                dataType: "json",
+                encode: true,
+            }).done(function (data) {
+                let html = "";
+                data.map((item) => {
+                    html += `<div class="contain-image" data-id="` + item.id + `"
+        style="width: 18%; height: 200px; position: relative; margin-left: 2px; margin-top: 2px">
+        <img src="`+ item.thumbnailLink + `" 
+            style="object-fit: cover; height: 100%; position: absolute; width: 100%;" alt="">
+        <button data-id="` + item.id + `" data-name="` + item.name + `" style="position: absolute; top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);" type="button" class="btn btn-outline-success btn-fw btn-choose-this-blog">Chọn ảnh này</button>
+    </div>`;
+                })
+                $(".all-image-company").html(html)
+            }).then(() => {
+                $(".all-image-company").css('display', 'flex')
+            }).then(() => {
+                $(".btn-choose-this-blog").click(function () {
+                    let idImage = $(this).attr('data-id')
+                    image_blog = `https://drive.google.com/uc?id=` + idImage + ``;
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Your work has been saved',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                    $(".show-image-blog").attr('src', image_blog);
+                    $(".layout").hide();
+                    $(".all-image-company").hide();
+                })
+            })
+        })
+        //add content in blog
+        $(".btn-update-company").click(function () {
+            $(".layout").css('display', 'block');
+            let titleBlog = $(".title-blog").val()
+            let contentBlog = $(".content-blog").val()
+            let permit = true;
+            $(".err-title-blog").html(" ");
+            $(".err-content-blog").html(" ");
+            if (titleBlog == "") {
+                permit = false;
+                $(".err-title-blog").html('Chưa điền tiêu đề');
+            }
+            if (contentBlog == "") {
+                permit = false;
+                $(".err-content-blog").html('Chưa điền nội dung')
+            }
+            if (image_blog == "") {
+                permit = false;
+                $(".err-img-blog").html('Chưa chọn ảnh cho bài viết')
+            }
+            if (permit == true) {
+                let form = new FormData();
+                form = {
+                    _id: '64312a497270f261127e15ad',
+                    obj: {
+                        aboutPage: {
+                            image: image_blog,
+                            title: titleBlog,
+                            content: contentBlog,
+                            employee: all_people_company
+                        }
+                    }
+
+                }
+                //call ajax requesst post
+                $.ajax({
+                    url: '/admin/update-inf-company',
+                    async: true,
+                    type: 'POST',
+                    dataType: "json",
+                    data: form,
+                    encode: true,
+                }).done(function (data) {
+                    if (data == 'success') {
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'Cập nhật thành công',
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                        $(".layout").hide();
+                        allPeople()
+
+                    } else {
+                        console.log(data)
+                    }
+                })
+            }
+        })
+
+    })
+</script>

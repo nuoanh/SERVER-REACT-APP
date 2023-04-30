@@ -1,0 +1,303 @@
+{{!-- js for this page --}}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+{{!-- sweet alert --}}
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- jsDeliver -->
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.lazy/1.7.9/jquery.lazy.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.lazy/1.7.9/jquery.lazy.plugins.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.2.0/lazysizes.min.js" async=""></script>
+
+<div class="layout"
+    style="position: fixed; width: 100%; height: 100%; top: 0; background-color: rgba(75, 74, 74, 0.5); z-index: 100; display: none; ">
+    <div class="lds-roller" style="position: absolute; top: 50%;
+    left: 40%;
+    transform: translate(-50%, -50%);">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+</div>
+<style>
+    .lds-roller {
+        display: inline-block;
+        position: relative;
+        width: 80px;
+        height: 80px;
+    }
+
+    .lds-roller div {
+        animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        transform-origin: 40px 40px;
+    }
+
+    .lds-roller div:after {
+        content: " ";
+        display: block;
+        position: absolute;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #fff;
+        margin: -4px 0 0 -4px;
+    }
+
+    .lds-roller div:nth-child(1) {
+        animation-delay: -0.036s;
+    }
+
+    .lds-roller div:nth-child(1):after {
+        top: 63px;
+        left: 63px;
+    }
+
+    .lds-roller div:nth-child(2) {
+        animation-delay: -0.072s;
+    }
+
+    .lds-roller div:nth-child(2):after {
+        top: 68px;
+        left: 56px;
+    }
+
+    .lds-roller div:nth-child(3) {
+        animation-delay: -0.108s;
+    }
+
+    .lds-roller div:nth-child(3):after {
+        top: 71px;
+        left: 48px;
+    }
+
+    .lds-roller div:nth-child(4) {
+        animation-delay: -0.144s;
+    }
+
+    .lds-roller div:nth-child(4):after {
+        top: 72px;
+        left: 40px;
+    }
+
+    .lds-roller div:nth-child(5) {
+        animation-delay: -0.18s;
+    }
+
+    .lds-roller div:nth-child(5):after {
+        top: 71px;
+        left: 32px;
+    }
+
+    .lds-roller div:nth-child(6) {
+        animation-delay: -0.216s;
+    }
+
+    .lds-roller div:nth-child(6):after {
+        top: 68px;
+        left: 24px;
+    }
+
+    .lds-roller div:nth-child(7) {
+        animation-delay: -0.252s;
+    }
+
+    .lds-roller div:nth-child(7):after {
+        top: 63px;
+        left: 17px;
+    }
+
+    .lds-roller div:nth-child(8) {
+        animation-delay: -0.288s;
+    }
+
+    .lds-roller div:nth-child(8):after {
+        top: 56px;
+        left: 12px;
+    }
+
+    @keyframes lds-roller {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+
+<div class="content-wrapper">
+    <div class="row">
+        <div class="col-md-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Liên kết link đến các trang social</h4>
+                    <p class="card-description">
+                        copy link đặt vào đây
+                    </p>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <input type="text" class="form-control link-fb" placeholder="Đường dẫn liên kết facebook"
+                                aria-label="Recipient's username">
+                            <p class="err-fb-company" style="color: red"></p>
+                            <div class="input-group-append">
+                                <button class="btn btn-sm btn-facebook" type="button">
+                                    <i class="ti-facebook"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <input type="text" class="form-control link-ins" placeholder="Đường dẫn liên kết ins"
+                                aria-label="Recipient's username">
+                            <p class="err-ins-company" style="color: red"></p>
+
+                            <div class="input-group-append">
+                                <button class="btn btn-sm btn-instagram" type="button">
+                                    <i class="ti-instagram"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <input type="text" class="form-control link-ytb" placeholder="Đường dẫn liên kết youtube"
+                                aria-label="Recipient's username">
+                            <p class="err-ytb-company" style="color: red"></p>
+
+                            <div class="input-group-append">
+                                <button class="btn btn-sm btn-youtube" type="button">
+                                    <i class="ti-youtube"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <input type="text" class="form-control link-more" placeholder="Đường dẫn liên kết khác"
+                                aria-label="Recipient's username">
+                            <p class="err-more-company" style="color: red"></p>
+
+                            <div class="input-group-append">
+                                <button class="btn btn-sm btn" type="button">
+                                    <i class="ti"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-inverse-primary btn-fw btn-update-social">Cập nhật</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        inforCompany()
+        //function get infor company
+        function inforCompany() {
+            $(".layout").css('display', 'block')
+            //get-inf-company
+            $.ajax({
+                url: '/admin/get-inf-company',
+                async: true,
+                type: 'GET',
+                dataType: "json",
+                encode: true,
+            }).done(function (data) {
+                console.log(data);
+                if (data.social) {
+                    let social = data.social;
+                    $(".link-more").val(social.more)
+                    $(".link-ytb").val(social.youtube)
+                    $(".link-ins").val(social.instagram)
+                    $(".link-fb").val(social.facebook)
+                }
+                $(".layout").hide()
+            })
+        }
+
+        //update social
+        $(".btn-update-social").click(function () {
+            let linkFacebook = $(".link-fb").val()
+            let linkInstagram = $(".link-ins").val()
+            let linkYoutube = $(".link-ytb").val()
+            let linkMore = $(".link-more").val()
+
+            let accept = true;
+            $(".err-fb-company").html(" ")
+            $(".err-ins-company").html(" ")
+            $(".err-ytb-company").html(" ")
+
+            let form = new FormData();
+            form = {
+                _id: '64312a497270f261127e15ad',
+                obj: {
+                    social: {
+                        facebook: linkFacebook,
+                        instagram: linkInstagram,
+                        youtube: linkYoutube,
+                        more: linkMore
+                    }
+                }
+
+            }
+            if (linkFacebook == "") {
+                $(".err-fb-company").html("chưa điền link fb !");
+                accept = false;
+            }
+            if (linkInstagram == "") {
+                $(".err-ins-company").html("chưa điền link ins !");
+                accept = false;
+            }
+            if (linkYoutube == "") {
+                $(".err-ytb-company").html("chưa điền ytb!");
+                accept = false;
+            }
+            if (linkMore == "") {
+                $(".err-ytb-company").html("chưa điền ngoài ra!");
+                accept = false;
+            }
+
+
+            if (accept == true) {
+                //update
+                $(".layout").css('display', 'block');
+
+                //call ajax requesst post
+                $.ajax({
+                    url: '/admin/update-inf-company',
+                    async: true,
+                    type: 'POST',
+                    dataType: "json",
+                    data: form,
+                    encode: true,
+                }).done(function (data) {
+                    if (data == 'success') {
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'Cập nhật thành công',
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                        $(".layout").hide();
+                    } else {
+                        console.log(data)
+                    }
+                })
+            }
+        })
+
+
+
+        $(".layout").click(function () {
+            $(this).hide();
+        })
+
+    })
+</script>

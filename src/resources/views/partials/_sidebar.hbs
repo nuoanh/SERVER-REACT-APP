@@ -1,0 +1,96 @@
+<!-- partial:partials/_sidebar.html -->
+<nav class="sidebar sidebar-offcanvas" id="sidebar">
+  <ul class="nav">
+    <li class="nav-item">
+      <a class="nav-link" href="/admin">
+        <i class="mdi mdi-grid-large menu-icon"></i>
+        <span class="menu-title">Thống kê</span>
+      </a>
+    </li>
+    <li class="nav-item nav-category">Quản lí dữ liệu</li>
+    <li class="nav-item">
+      <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+        <i class="menu-icon mdi mdi-floor-plan"></i>
+        <span class="menu-title">Về sản phẩm</span>
+        <i class="menu-arrow"></i>
+      </a>
+      <div class="collapse" id="ui-basic">
+        <ul class="nav flex-column sub-menu">
+          <li class="nav-item"> <a class="nav-link" href="/admin/admin-product">Sản phẩm</a></li>
+          <li class="nav-item"> <a class="nav-link" href="/admin/category-product">Loại sản phẩm</a></li>
+          <li class="nav-item"> <a class="nav-link" href="/admin/image-responsitory">Kho ảnh sản phẩm</a></li>
+          <li class="nav-item"> <a class="nav-link" href="/admin/comment-product">Đánh giá sản phẩm</a></li>
+
+          {{!-- <li class="nav-item"> <a class="nav-link" href="/admin/image-responsitory">Thiết lập giảm giá</a></li> --}}
+
+        </ul>
+      </div>
+    </li>
+
+    <li class="nav-item nav-category">Thông tin trên giao diện</li>
+    <li class="nav-item">
+      <a class="nav-link" data-bs-toggle="collapse" href="#form-elements" aria-expanded="false"
+        aria-controls="form-elements">
+        <i class="menu-icon mdi mdi-card-text-outline"></i>
+        <span class="menu-title">thành phần mặc định</span>
+        <i class="menu-arrow"></i>
+      </a>
+      <div class="collapse" id="form-elements">
+        <ul class="nav flex-column sub-menu">
+          <li class="nav-item"><a class="nav-link" href="/admin/admin-information-company">Thông tin công ty</a></li>
+          <li class="nav-item"><a class="nav-link" href="/admin/admin-social-company">Thông tin các kênh social</a></li>
+          <li class="nav-item"><a class="nav-link" href="/admin/admin-about-company">Trang about(Chúng tôi)</a></li>
+
+        </ul>
+      </div>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" data-bs-toggle="collapse" href="#charts" aria-expanded="false" aria-controls="charts">
+        <i class="menu-icon mdi mdi-chart-line"></i>
+        <span class="menu-title">Kho ảnh về công ty</span>
+        <i class="menu-arrow"></i>
+      </a>
+      <div class="collapse" id="charts">
+        <ul class="nav flex-column sub-menu">
+          <li class="nav-item"> <a class="nav-link" href="/admin/responsitory-image-company">Logo, công ty và nhân
+              sự</a></li>
+        </ul>
+      </div>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" data-bs-toggle="collapse" href="#tables" aria-expanded="false" aria-controls="tables">
+        <i class="menu-icon mdi mdi-table"></i>
+        <span class="menu-title">Banner, slider</span>
+        <i class="menu-arrow"></i>
+      </a>
+      <div class="collapse" id="tables">
+        <ul class="nav flex-column sub-menu">
+          <li class="nav-item"> <a class="nav-link" href="/admin/admim-banner-slider">Banner, slider</a></li>
+        </ul>
+      </div>
+    </li>
+
+    <li class="nav-item nav-category">Quản lí đơn hàng</li>
+    <li class="nav-item">
+      <a class="nav-link" data-bs-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
+        <i class="menu-icon mdi mdi-account-circle-outline"></i>
+        <span class="menu-title">Quản lí đơn</span>
+        <i class="menu-arrow"></i>
+      </a>
+      <div class="collapse" id="auth">
+        <ul class="nav flex-column sub-menu">
+          <li class="nav-item"> <a class="nav-link" href="/admin/order-handle"> Xử lí đơn </a></li>
+          <li class="nav-item"> <a class="nav-link" href="/admin/order-success"> Đơn đã xác nhận </a></li>
+        </ul>
+      </div>
+    </li>
+    <li class="nav-item nav-category">Bài viết</li>
+    <li class="nav-item">
+      <a class="nav-link" href="/admin/admin-blog">
+        <i class="menu-icon mdi mdi-file-document"></i>
+        <span class="menu-title">Quản li bài viết</span>
+      </a>
+    </li>
+  </ul>
+</nav>
+<!-- partial -->

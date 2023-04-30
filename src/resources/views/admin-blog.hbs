@@ -1,0 +1,1296 @@
+{{!-- js for this page --}}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+{{!-- sweet alert --}}
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- jsDeliver -->
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.lazy/1.7.9/jquery.lazy.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.lazy/1.7.9/jquery.lazy.plugins.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.2.0/lazysizes.min.js" async=""></script>
+<script>
+    $(document).ready(function () {
+        var image_cate = "";
+        allCategory()
+        function allCategory() {
+            $.ajax({
+                url: '/admin/get-all-category-blog',
+                async: true,
+                type: 'GET',
+                dataType: "json",
+                encode: true,
+            }).done(function (data) {
+                let html = "";
+                data.map((cate) => {
+                    html += ` <tr>
+                                    <td> <img src = `+
+                        cate.image + `>
+                                        
+                                    </td>
+                                    <td>
+                                        `+ cate.name + `
+                                    </td>
+                                    <td>
+                                        `+ cate.description + `
+                                    </td>
+                                     <td><button type="button" class="btn btn-primary btn-sm btn-detail-cate" data-id="`+ cate._id + `">chi tiết</button></td>
+                                    <td><button type="button" class="btn btn-warning btn-sm btn-delete-cate"  data-id="`+ cate._id + `">xoá</button></td>                                   
+                                   
+                                </tr>`;
+                })
+                $("#tbl_category").html(html);
+                console.log(data);
+            }).then(() => {
+                //delete category
+                $(".btn-delete-cate").click(function () {
+                    $(".layout").css('display', 'block')
+                    let idCate = $(this).attr('data-id');
+                    let f_idCate = new FormData();
+                    f_idCate = { '_id': idCate }
+                    Swal.fire({
+                        title: 'Bạn có chắc muốn xóa  loại sản phẩm này?',
+                        text: "Bạn không thể khôi phục sản phẩm này sau khi xóa!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Đồng ý'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: '/admin/delete-category-blog',
+                                type: 'POST',
+                                async: false,
+                                data: f_idCate,
+                                dataType: "json",
+                                encode: true,
+                            }).done(function (data) {
+                                if (data == 'success') {
+                                    Swal.fire(
+                                        'Xóa thành công!',
+                                        'Your file has been deleted.',
+                                        'success'
+                                    )
+                                } else {
+                                    console.log(data)
+                                }
+                            }).then(() => {
+                                allCategory()
+                                $(".layout").hide()
+                            })
+
+                        }
+                    })
+
+                })
+
+            }).then(() => {
+                //detail category
+                $(".btn-detail-cate").click(function () {
+                    $(".layout").css('display', 'block');
+                    let idCate = $(this).attr('data-id');
+                    $(".contain-detail-cate").css('display', 'block');
+                    $(".contain-add-cate").hide()
+                    $(".contain-tbl-cate").hide();
+                    $
+                    $.ajax({
+                        url: '/admin/get-detail-category-blog/' + idCate + '',
+                        async: true,
+                        type: 'GET',
+                        dataType: "json",
+                        encode: true,
+                    }).done(function (data) {
+                        $(".layout").hide();
+                        $(".update-name-cate").val(data.name)
+                        $(".update-des-cate").val(data.description);
+                        $(".id-update-cate").val(data._id);
+                        console.log(data);
+                    })
+                })
+            })
+        }
+
+
+        //image cateblog
+
+        $(".layout").click(function () {
+            $(this).hide();
+            $(".all-image-drive").hide();
+        })
+        //image banner cate
+        $(".btn-choose-image-cate").click(function () {
+            $(".layout").css('display', 'block')
+            $.ajax({
+                url: '/admin/all-image-company',
+                async: true,
+                type: 'GET',
+                dataType: "json",
+                encode: true,
+            }).done(function (data) {
+                let html = "";
+                data.map((item) => {
+                    html += `<div class="contain-image" data-id="` + item.id + `"
+        style="width: 18%; height: 200px; position: relative; margin-left: 2px; margin-top: 2px">
+        <img src="`+ item.thumbnailLink + `" 
+            style="object-fit: cover; height: 100%; position: absolute; width: 100%;" alt="">
+        <button data-id="` + item.id + `" data-name="` + item.name + `" style="position: absolute; top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);" type="button" class="btn btn-outline-success btn-fw btn-choose-this-image">Chọn ảnh này</button>
+    </div>`;
+                })
+                $(".all-image-drive").html(html)
+            }).then(() => {
+                $(".all-image-drive").css('display', 'flex');
+            }).then(() => {
+                $(".btn-choose-this-image").click(function () {
+                    let idImage = $(this).attr('data-id');
+                    image_cate = `https://drive.google.com/uc?id=` + idImage + ``;
+                    $(".show-banner-cate").attr('src', image_cate);
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Your work has been saved',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                })
+            }).then(() => {
+
+            })
+        })
+
+        //add cate blog
+        //add cate
+        $(".btn-add-cate").click(function () {
+            $(".layout").css('display', 'block')
+            $(".err-name-cate").html(" ");
+            $(".err-des-cate").html("");
+            let validation = true;
+            let nameCate = $(".name-cate").val();
+            let descriptCate = $(".descript-cate").val();
+            if (nameCate == "") {
+                validation = false;
+                $(".err-name-cate").html('chưa điền tên loại danh mục').css('color', 'red')
+            }
+            if (descriptCate == "") {
+                validation = false;
+                $(".err-des-cate").html('chưa điền mô tả loại danh mục').css('color', 'red')
+            }
+            if (validation == true) {
+                //call ajax to add category
+                //add-cate-prod
+                let form = new FormData();
+                form = {
+                    name: nameCate,
+                    description: descriptCate,
+                    image: image_cate
+                }
+                $.ajax({
+                    url: '/admin/add-cate-blog',
+                    async: true,
+                    type: 'POST',
+                    dataType: "json",
+                    data: form,
+                    encode: true,
+                }).done(function (data) {
+                    if (data == 'success') {
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'Thêm loại sản phẩm thành công',
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                        $(".name-cate").val(" ");
+                        $(".descript-cate").val(" ");
+                    }
+                }).then(() => {
+                    $(".layout").hide()
+                    allCategory()
+                })
+            } else {
+                $(".layout").hide()
+            }
+        })
+        //cancel updateprod
+        $(".btn-cancel-update-cate").click(function () {
+            $(".contain-detail-cate").hide()
+            $(".contain-tbl-cate").show()
+            $(".contain-add-cate").show();
+
+        })
+
+        //submit update category
+        $(".btn-submit-update-cate").click(function () {
+            let idCate = $(".id-update-cate").val();
+            $(".err-ud-name-cate").html(" ");
+            $(".err-ud-des-cate").html(" ");
+            let permision_submit = true;
+
+            var ud_name_cate = $(".update-name-cate").val();
+            var ud_des_cate = $(".update-des-cate").val();
+            //cate từ từ đang làm
+            if (ud_name_cate == "") {
+                $(".err-ud-name-cate").html('Chưa điền tên loại sản phẩm').css('color', 'red');
+                permision_submit = false;
+            }
+            if (ud_des_cate == "") {
+                $(".err-ud-des-cate").html('Chưa mô tả loại sản phẩm').css('color', 'red');
+                permision_submit = false;
+            }
+
+            if (permision_submit) {
+                $(".layout").css('display', 'block');
+
+                let form = new FormData();
+                form = {
+                    _id: idCate,
+                    obj: {
+                        name: ud_name_cate,
+                        description: ud_des_cate
+                    }
+                }
+                //call ajax requesst post to update
+                $.ajax({
+                    url: '/admin/update-category-blog',
+                    async: true,
+                    type: 'POST',
+                    dataType: "json",
+                    data: form,
+                    encode: true,
+                }).done(function (data) {
+                    if (data == 'success') {
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'Cập nhật sản phẩm thành công',
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                    }
+                }).then(() => {
+                    setTimeout(function () {
+                        location.reload(true);
+                    }, 1000)
+                })
+            }
+
+        })
+
+
+    })
+
+</script>
+<style>
+    .lds-roller {
+        display: inline-block;
+        position: relative;
+        width: 80px;
+        height: 80px;
+    }
+
+    .lds-roller div {
+        animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        transform-origin: 40px 40px;
+    }
+
+    .lds-roller div:after {
+        content: " ";
+        display: block;
+        position: absolute;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #fff;
+        margin: -4px 0 0 -4px;
+    }
+
+    .lds-roller div:nth-child(1) {
+        animation-delay: -0.036s;
+    }
+
+    .lds-roller div:nth-child(1):after {
+        top: 63px;
+        left: 63px;
+    }
+
+    .lds-roller div:nth-child(2) {
+        animation-delay: -0.072s;
+    }
+
+    .lds-roller div:nth-child(2):after {
+        top: 68px;
+        left: 56px;
+    }
+
+    .lds-roller div:nth-child(3) {
+        animation-delay: -0.108s;
+    }
+
+    .lds-roller div:nth-child(3):after {
+        top: 71px;
+        left: 48px;
+    }
+
+    .lds-roller div:nth-child(4) {
+        animation-delay: -0.144s;
+    }
+
+    .lds-roller div:nth-child(4):after {
+        top: 72px;
+        left: 40px;
+    }
+
+    .lds-roller div:nth-child(5) {
+        animation-delay: -0.18s;
+    }
+
+    .lds-roller div:nth-child(5):after {
+        top: 71px;
+        left: 32px;
+    }
+
+    .lds-roller div:nth-child(6) {
+        animation-delay: -0.216s;
+    }
+
+    .lds-roller div:nth-child(6):after {
+        top: 68px;
+        left: 24px;
+    }
+
+    .lds-roller div:nth-child(7) {
+        animation-delay: -0.252s;
+    }
+
+    .lds-roller div:nth-child(7):after {
+        top: 63px;
+        left: 17px;
+    }
+
+    .lds-roller div:nth-child(8) {
+        animation-delay: -0.288s;
+    }
+
+    .lds-roller div:nth-child(8):after {
+        top: 56px;
+        left: 12px;
+    }
+
+    @keyframes lds-roller {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+<div class="all-image-drive"
+    style="position: fixed; width: 80%; height: 80%; top: 58%;
+    border-left: solid 2px rgb(5, 92, 62);
+    padding: 3px;
+    left: 50%;
+    transform: translate(-50%, -50%);  background-color: rgba(255, 255, 255); z-index: 101; display: none; flex-wrap: wrap; overflow-y: scroll; justify-content: space-between;">
+    {{!-- contain all iamge product --}}
+</div>
+
+{{!-- start add blog --}}
+<div class="col-12 grid-margin">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Thêm bài viết</h4>
+            <form class="form-sample">
+                <p class="card-description">
+                    Vui lòng cập nhật đầy đủ
+                </p>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Tên bài viết</label>
+                            <p class="err-name-blog" style="color: red"></p>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control name-blog">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Thể loại</label>
+                            <p class="err-address-company" style="color: red"></p>
+
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control address-company">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Tiêu đề</label>
+                            <p class="err-title-blog" style="color: red"></p>
+
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control title-blog">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Nội dung</label>
+                            <p class="err-des-blog" style="color: red"></p>
+
+                            <div class="col-sm-9">
+                                <textarea class="form-control des-blog" id="exampleTextarea1" style="min-height: 700px;"
+                                    rows="4"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <button type="button" class="btn btn-primary btn-add-blog">Thêm</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{{!-- end add blog --}}
+
+
+<div class="layout"
+    style="position: fixed; width: 100%; height: 100%; top: 0; background-color: rgba(75, 74, 74, 0.5); z-index: 100; display: none; ">
+    <div class="lds-roller" style="position: absolute; top: 50%;
+    left: 40%;
+    transform: translate(-50%, -50%);">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+</div>
+<div class="col-12 grid-margin stretch-card">
+
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Tất cả các bài viết</h4>
+            <p class="card-description">
+                Danh sách tất cả các bài viết <code>Admin là người thêm</code>
+            </p>
+            <div class="table-responsive pt-3">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>
+                                Ảnh
+                            </th>
+                            <th>
+                                Tên sản phẩm
+                            </th>
+                            <th>
+                                Danh mục
+                            </th>
+                            <th>
+                                Giá sản phẩm
+                            </th>
+                            <th>Chỉnh sửa</th>
+                            <th>Xoá một</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbl_all_prod">
+                        <tr>
+                            <td>
+                                <img src="https://drive.google.com/uc?id=1HqfayiVysTx4NJ_j0wAETxoCjejY8w3T ">
+                            </td>
+                            <td>
+                                sen đá lá phật
+                            </td>
+                            <td>
+                                Sen đá
+                            </td>
+
+                            <td>
+                                12000 vnđ
+                            </td>
+
+                            <td><button type="button" class="btn btn-primary btn-sm btn-detail"
+                                    data-id="643e74ada570f250dcc86ecf">chi tiết</button></td>
+                            <td><button type="button" class="btn btn-warning btn-sm btn-delete-prod"
+                                    data-id="643e74ada570f250dcc86ecf">xoá</button></td>
+                            <td>
+                                <button type="button" class="btn btn-inverse-info btn-fw btn-sm btn-change-draft"
+                                    data-id="643e74ada570f250dcc86ecf">Công khai</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <img src="https://drive.google.com/uc?id=1wCQV5amiG0TLrZd2IFSoVOrhaW9NzA5R ">
+                            </td>
+                            <td>
+                                Sen đá lá tim
+                            </td>
+                            <td>
+                                Sen đá
+                            </td>
+
+                            <td>
+                                30000 vnđ
+                            </td>
+
+                            <td><button type="button" class="btn btn-primary btn-sm btn-detail"
+                                    data-id="643e74d6a570f250dcc86ede">chi tiết</button></td>
+                            <td><button type="button" class="btn btn-warning btn-sm btn-delete-prod"
+                                    data-id="643e74d6a570f250dcc86ede">xoá</button></td>
+                            <td>
+                                <button type="button" class="btn btn-inverse-info btn-fw btn-sm btn-change-draft"
+                                    data-id="643e74d6a570f250dcc86ede">Công khai</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content-wrapper">
+    <div class="row">
+        <div class="col-12 grid-margin stretch-card contain-detail-cate" style="display: none;">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Thông tin chi tiết loại sản phẩm</h4>
+                    <form class="forms-sample">
+                        <div class="form-group">
+                            <input type="hidden" class="id-update-cate">
+                            <label for="exampleInputName1">Tên danh mục</label>
+                            <p class="err-ud-name-cate"></p>
+
+                            <input type="text" class="form-control update-name-cate" id="exampleInputName1"
+                                placeholder="Tên sản phẩm" fdprocessedid="ewikud">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="exampleTextarea1 ">Mô tả loại sản phẩm</label>
+                            <p class="err-ud-des-cate"></p>
+                            <textarea class="form-control update-des-cate" style="height: 400px;" id="exampleTextarea1"
+                                rows="4"></textarea>
+                        </div>
+                        <button type="button" class="btn btn-primary me-2 btn-submit-update-cate"
+                            fdprocessedid="9jz5h">Cập nhật</button>
+                        <button type="button" class="btn btn-light btn-cancel-update-cate" fdprocessedid="r0oeaq">Hủy
+                            bỏ</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-8 grid-margin stretch-card contain-tbl-cate">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Tất cả các loại sản phẩm hiện đang có</h4>
+                    <p class="card-description">
+                        Danh sách tất cả các loại sản phẩm đã thêm <code>Admin là người thêm</code>
+                    </p>
+                    <div class="table-responsive pt-3">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Ảnh
+                                    </th>
+                                    <th>
+                                        Tên loại sản phẩm
+                                    </th>
+                                    <th>
+                                        Mô tả
+                                    </th>
+                                    <th>
+                                        Chi tiết
+                                    </th>
+                                    <th>
+                                        Xóa
+                                    </th>
+
+                                </tr>
+                            </thead>
+                            <tbody id="tbl_category">
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{!-- add cate blog --}}
+        <div class="col-4 grid-margin stretch-card contain-add-cate">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Thêm loại sản phẩm</h4>
+                    <p class="card-description">
+                        Điền đầy đủ thông tin 1 loại sản phẩm
+                    </p>
+                    <p class="card-description">
+                        Xem về sản phẩm hiện có <code>Hoặc thêm sản phẩm</code><a target="_blank"
+                            href="admin-product">Tại
+                            đây</a>
+                    </p>
+                    <form class="forms-sample">
+                        <div class="form-group">
+                            <label for="exampleInputName1">Tên loại sản phẩm</label>
+                            <p class="err-name-cate"></p>
+                            <input type="text" class="form-control name-cate" id="exampleInputName1"
+                                placeholder="Tên loại sản phẩm">
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="exampleTextarea1">Mô tả</label>
+                            <p class="err-des-cate"></p>
+                            <textarea class="form-control descript-cate" style="min-height: 200px;"
+                                id="exampleTextarea1" rows="4"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleTextarea1">Chọn ảnh đặc trưng cho danh mục này</label>
+                            <button type="button"
+                                class="btn btn-outline-primary btn-fw btn-choose-image-cate">Chọn</button>
+                            <img src="" class="show-banner-cate" width="100%" alt="">
+                        </div>
+                        <button type="button" class="btn btn-primary me-2 btn-add-cate">Đăng</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {{!-- end cate blog --}}
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Tất cả các bình luận về bài viết</h4>
+        <p class="card-description">
+            Danh sách tất cả các phản hồi của khách hàng <code>Admin là người xử lí</code>
+        </p>
+        <div class="table-responsive pt-3">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>
+
+                        </th>
+                        <th>
+                            Ảnh sp
+                        </th>
+                        <th>
+                            Tên sản phẩm
+                        </th>
+                        <th>
+                            Người bình luận
+                        </th>
+                        <th>
+                            Nội dung
+                        </th>
+                        <th>
+                            Thời gian
+                        </th>
+                        <th>
+                            Phản hồi
+                        </th>
+                        <th>
+                            Phản hồi trước
+                        </th>
+
+                    </tr>
+                </thead>
+                <tbody id="tbl_all_comment">
+                    <tr>
+                        <td>1</td>
+
+                        <td>
+                            <p style="color: red">sp ko tồn tại</p>
+                        </td>
+                        <td>sản phẩm này không tồn tại</td>
+                        <td>
+                            Nguyễn Hoàng Nữ Oanh
+                        </td>
+                        <td>
+                            123
+                        </td>
+                        <td>
+                            2023-04-15T09:57:05.248Z
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-inverse-info btn-fw btn-sm btn-response"
+                                data-id="643a74f199cf46c53db53158">Phản hồi</button>
+                            <div class="form-group">
+                                <label for="exampleTextarea1 ">Nhập nội dung phản hồi</label>
+                                <p class="err-content-respose" style="color: red"></p>
+                                <textarea class="form-control content-respose-643a74f199cf46c53db53158"
+                                    style="height: 100px;" id="exampleTextarea1" rows="4"></textarea>
+                            </div>
+                        </td>
+                        <td>
+                            <ul>
+                                <li>Thời gian: Sun Apr 16 2023 18:08:40 GMT+0700 (Indochina Time), <br> <b>Nội dung:
+                                        hahahaha</b></li>
+                                <li>Thời gian: Sun Apr 16 2023 18:12:43 GMT+0700 (Indochina Time), <br> <b>Nội dung:
+                                        thanks</b></li>
+                                <li>Thời gian: Sun Apr 16 2023 18:13:11 GMT+0700 (Indochina Time), <br> <b>Nội dung:
+                                        camr on da gop y</b></li>
+                                <li>Thời gian: Sun Apr 16 2023 18:19:54 GMT+0700 (Indochina Time), <br> <b>Nội dung:
+                                        oanh văn vở</b></li>
+                                <li>Thời gian: Sun Apr 16 2023 18:24:04 GMT+0700 (Indochina Time), <br> <b>Nội dung:
+                                        oanh ơi nấu cơm đi</b></li>
+                            </ul>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td>2</td>
+
+                        <td>
+                            <p style="color: red">sp ko tồn tại</p>
+                        </td>
+                        <td>sản phẩm này không tồn tại</td>
+                        <td>
+                            Nguyễn Hoàng Nữ Oanh
+                        </td>
+                        <td>
+                            mặt hàng này khá tốt
+                        </td>
+                        <td>
+                            2023-04-15T09:58:27.931Z
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-inverse-info btn-fw btn-sm btn-response"
+                                data-id="643a7543deba8f51c0ac56fe">Phản hồi</button>
+                            <div class="form-group">
+                                <label for="exampleTextarea1 ">Nhập nội dung phản hồi</label>
+                                <p class="err-content-respose" style="color: red"></p>
+                                <textarea class="form-control content-respose-643a7543deba8f51c0ac56fe"
+                                    style="height: 100px;" id="exampleTextarea1" rows="4"></textarea>
+                            </div>
+                        </td>
+                        <td>
+                            <ul>
+                                <li>Thời gian: Sun Apr 16 2023 18:13:28 GMT+0700 (Indochina Time), <br> <b>Nội dung: cam
+                                        on</b></li>
+                            </ul>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td>3</td>
+
+                        <td>
+                            <p style="color: red">sp ko tồn tại</p>
+                        </td>
+                        <td>sản phẩm này không tồn tại</td>
+                        <td>
+                            Nguyễn Hoàng Nữ Oanh
+                        </td>
+                        <td>
+                            Mặt hàng này tôi mua hết
+                        </td>
+                        <td>
+                            2023-04-15T10:01:40.146Z
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-inverse-info btn-fw btn-sm btn-response"
+                                data-id="643a7604deba8f51c0ac5723">Phản hồi</button>
+                            <div class="form-group">
+                                <label for="exampleTextarea1 ">Nhập nội dung phản hồi</label>
+                                <p class="err-content-respose" style="color: red"></p>
+                                <textarea class="form-control content-respose-643a7604deba8f51c0ac5723"
+                                    style="height: 100px;" id="exampleTextarea1" rows="4"></textarea>
+                            </div>
+                        </td>
+                        <td>
+                            <ul>
+                                <li>Thời gian: Sun Apr 16 2023 18:14:57 GMT+0700 (Indochina Time), <br> <b>Nội dung: sen
+                                        đá thật tuyệt</b></li>
+                            </ul>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td>4</td>
+
+                        <td>
+                            <p style="color: red">sp ko tồn tại</p>
+                        </td>
+                        <td>sản phẩm này không tồn tại</td>
+                        <td>
+                            Nguyễn Hoàng Nữ Oanh
+                        </td>
+                        <td>
+                            Cai nay an ngon qua
+                        </td>
+                        <td>
+                            2023-04-15T10:29:42.887Z
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-inverse-info btn-fw btn-sm btn-response"
+                                data-id="643a7c96096b01f7ce921794">Phản hồi</button>
+                            <div class="form-group">
+                                <label for="exampleTextarea1 ">Nhập nội dung phản hồi</label>
+                                <p class="err-content-respose" style="color: red"></p>
+                                <textarea class="form-control content-respose-643a7c96096b01f7ce921794"
+                                    style="height: 100px;" id="exampleTextarea1" rows="4"></textarea>
+                            </div>
+                        </td>
+                        <td>
+                            <ul>
+                                <li>Thời gian: Sun Apr 16 2023 18:23:47 GMT+0700 (Indochina Time), <br> <b>Nội dung:
+                                        Oanh hahaha</b></li>
+                            </ul>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td>5</td>
+
+                        <td>
+                            <p style="color: red">sp ko tồn tại</p>
+                        </td>
+                        <td>sản phẩm này không tồn tại</td>
+                        <td>
+                            Nguyễn Hoàng Nữ Oanh
+                        </td>
+                        <td>
+                            cai nay ok qua
+                        </td>
+                        <td>
+                            2023-04-15T10:30:21.215Z
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-inverse-info btn-fw btn-sm btn-response"
+                                data-id="643a7cbd096b01f7ce9217ee">Phản hồi</button>
+                            <div class="form-group">
+                                <label for="exampleTextarea1 ">Nhập nội dung phản hồi</label>
+                                <p class="err-content-respose" style="color: red"></p>
+                                <textarea class="form-control content-respose-643a7cbd096b01f7ce9217ee"
+                                    style="height: 100px;" id="exampleTextarea1" rows="4"></textarea>
+                            </div>
+                        </td>
+                        <td>
+                            <ul>
+                            </ul>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td>6</td>
+
+                        <td>
+                            <p style="color: red">sp ko tồn tại</p>
+                        </td>
+                        <td>sản phẩm này không tồn tại</td>
+                        <td>
+                            Nguyễn Hoàng Nữ Oanh
+                        </td>
+                        <td>
+                            mặt hàng nayd đẹp lắm
+                        </td>
+                        <td>
+                            2023-04-15T10:36:57.277Z
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-inverse-info btn-fw btn-sm btn-response"
+                                data-id="643a7e49096b01f7ce921919">Phản hồi</button>
+                            <div class="form-group">
+                                <label for="exampleTextarea1 ">Nhập nội dung phản hồi</label>
+                                <p class="err-content-respose" style="color: red"></p>
+                                <textarea class="form-control content-respose-643a7e49096b01f7ce921919"
+                                    style="height: 100px;" id="exampleTextarea1" rows="4"></textarea>
+                            </div>
+                        </td>
+                        <td>
+                            <ul>
+                            </ul>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td>7</td>
+
+                        <td>
+                            <p style="color: red">sp ko tồn tại</p>
+                        </td>
+                        <td>sản phẩm này không tồn tại</td>
+                        <td>
+                            Nguyễn Hoàng Nữ Oanh
+                        </td>
+                        <td>
+                            hahaha
+                        </td>
+                        <td>
+                            2023-04-16T05:18:52.797Z
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-inverse-info btn-fw btn-sm btn-response"
+                                data-id="643b853c3605fb72a514259f">Phản hồi</button>
+                            <div class="form-group">
+                                <label for="exampleTextarea1 ">Nhập nội dung phản hồi</label>
+                                <p class="err-content-respose" style="color: red"></p>
+                                <textarea class="form-control content-respose-643b853c3605fb72a514259f"
+                                    style="height: 100px;" id="exampleTextarea1" rows="4"></textarea>
+                            </div>
+                        </td>
+                        <td>
+                            <ul>
+                            </ul>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td>8</td>
+
+                        <td>
+                            <p style="color: red">sp ko tồn tại</p>
+                        </td>
+                        <td>sản phẩm này không tồn tại</td>
+                        <td>
+                            Nguyễn Hoàng Nữ Oanh
+                        </td>
+                        <td>
+                            Tớ là oanh
+                        </td>
+                        <td>
+                            2023-04-16T14:10:42.921Z
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-inverse-info btn-fw btn-sm btn-response"
+                                data-id="643c01e2f35c15f788b377dd">Phản hồi</button>
+                            <div class="form-group">
+                                <label for="exampleTextarea1 ">Nhập nội dung phản hồi</label>
+                                <p class="err-content-respose" style="color: red"></p>
+                                <textarea class="form-control content-respose-643c01e2f35c15f788b377dd"
+                                    style="height: 100px;" id="exampleTextarea1" rows="4"></textarea>
+                            </div>
+                        </td>
+                        <td>
+                            <ul>
+                                <li>Thời gian: Sun Apr 16 2023 21:11:11 GMT+0700 (Indochina Time), <br> <b>Nội dung: cảm
+                                        ơn bạn đã đánh giá</b></li>
+                            </ul>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td>9</td>
+
+                        <td>
+                            <p style="color: red">sp ko tồn tại</p>
+                        </td>
+                        <td>sản phẩm này không tồn tại</td>
+                        <td>
+                            Nguyễn Hoàng Nữ Oanh
+                        </td>
+                        <td>
+                            shop ban đồ đẹp quá
+                        </td>
+                        <td>
+                            2023-04-17T05:21:24.286Z
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-inverse-info btn-fw btn-sm btn-response"
+                                data-id="643cd754695d0bdea0e9cb92">Phản hồi</button>
+                            <div class="form-group">
+                                <label for="exampleTextarea1 ">Nhập nội dung phản hồi</label>
+                                <p class="err-content-respose" style="color: red"></p>
+                                <textarea class="form-control content-respose-643cd754695d0bdea0e9cb92"
+                                    style="height: 100px;" id="exampleTextarea1" rows="4"></textarea>
+                            </div>
+                        </td>
+                        <td>
+                            <ul>
+                            </ul>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td>10</td>
+
+                        <td>
+                            <p style="color: red">sp ko tồn tại</p>
+                        </td>
+                        <td>sản phẩm này không tồn tại</td>
+                        <td>
+                            Nguyễn Hải Dương
+                        </td>
+                        <td>
+                            chào oanh
+                        </td>
+                        <td>
+                            2023-04-17T12:15:24.896Z
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-inverse-info btn-fw btn-sm btn-response"
+                                data-id="643d385c3a02302f8f99200e">Phản hồi</button>
+                            <div class="form-group">
+                                <label for="exampleTextarea1 ">Nhập nội dung phản hồi</label>
+                                <p class="err-content-respose" style="color: red"></p>
+                                <textarea class="form-control content-respose-643d385c3a02302f8f99200e"
+                                    style="height: 100px;" id="exampleTextarea1" rows="4"></textarea>
+                            </div>
+                        </td>
+                        <td>
+                            <ul>
+                            </ul>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td>11</td>
+
+                        <td> <img src="https://drive.google.com/uc?id=1HqfayiVysTx4NJ_j0wAETxoCjejY8w3T"> <img
+                                src="https://drive.google.com/uc?id=1YLf3S3h7eTe22OLiQ9zqkc6X-LN0U4Er"> <img
+                                src="https://drive.google.com/uc?id=1Oq-OgFxfzz_pfiquOYI4uq3Y3GIXIEVp"> <img
+                                src="https://drive.google.com/uc?id=1YopmRJRzSzX0MiQOo6pVgDD6uvFmpWEi"> <img
+                                src="https://drive.google.com/uc?id=1W2Q17fuT0OtxaQd6LBtJcf-lgbHoAK9t"> </td>
+                        <td><a href="../product/sen-da-la-phat-643e74ada570f250dcc86ecf" target="_blank"> sen đá lá
+                                phật</a></td>
+                        <td>
+                            Nguyễn Hoàng Nữ Oanh
+                        </td>
+                        <td>
+                            Sen đá đẹp quá
+                        </td>
+                        <td>
+                            2023-04-18T10:53:55.425Z
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-inverse-info btn-fw btn-sm btn-response"
+                                data-id="643e76c3a570f250dcc87255">Phản hồi</button>
+                            <div class="form-group">
+                                <label for="exampleTextarea1 ">Nhập nội dung phản hồi</label>
+                                <p class="err-content-respose" style="color: red"></p>
+                                <textarea class="form-control content-respose-643e76c3a570f250dcc87255"
+                                    style="height: 100px;" id="exampleTextarea1" rows="4"></textarea>
+                            </div>
+                        </td>
+                        <td>
+                            <ul>
+                                <li>Thời gian: Tue Apr 18 2023 17:57:33 GMT+0700 (Indochina Time), <br> <b>Nội dung: cảm
+                                        ơn bạn đã đống góp</b></li>
+                            </ul>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td>12</td>
+
+                        <td>
+                            <p style="color: red">sp ko tồn tại</p>
+                        </td>
+                        <td>sản phẩm này không tồn tại</td>
+                        <td>
+                            Nguyễn Hải Dương
+                        </td>
+                        <td>
+                            Shop đẹp quá
+                        </td>
+                        <td>
+                            2023-04-19T03:04:11.362Z
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-inverse-info btn-fw btn-sm btn-response"
+                                data-id="643f5a2b1ae148f954dcfa75">Phản hồi</button>
+                            <div class="form-group">
+                                <label for="exampleTextarea1 ">Nhập nội dung phản hồi</label>
+                                <p class="err-content-respose" style="color: red"></p>
+                                <textarea class="form-control content-respose-643f5a2b1ae148f954dcfa75"
+                                    style="height: 100px;" id="exampleTextarea1" rows="4"></textarea>
+                            </div>
+                        </td>
+                        <td>
+                            <ul>
+                                <li>Thời gian: Wed Apr 19 2023 10:13:26 GMT+0700 (Indochina Time), <br> <b>Nội dung: Cảm
+                                        ơn bạn đã phản hồi</b></li>
+                                <li>Thời gian: Wed Apr 19 2023 10:14:48 GMT+0700 (Indochina Time), <br> <b>Nội dung: Sen
+                                        đá đế vương có tên khoa học là Echeveria ebony agavoid, có nguồn gốc từ Mexico.
+                                        Vì cây nằm trong chi Echeveria nên thuộc họ Crassulaceae, hay còn được gọi là họ
+                                        là bỏng, thuộc loài sen đá xương rồng</b></li>
+                            </ul>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td>13</td>
+
+                        <td>
+                            <p style="color: red">sp ko tồn tại</p>
+                        </td>
+                        <td>sản phẩm này không tồn tại</td>
+                        <td>
+                            Nguyễn Hải Dương
+                        </td>
+                        <td>
+                            Shop ơi, sen đá có nguồn góc ở đâu vậy
+                        </td>
+                        <td>
+                            2023-04-19T03:14:18.161Z
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-inverse-info btn-fw btn-sm btn-response"
+                                data-id="643f5c8ada97180e41577b03">Phản hồi</button>
+                            <div class="form-group">
+                                <label for="exampleTextarea1 ">Nhập nội dung phản hồi</label>
+                                <p class="err-content-respose" style="color: red"></p>
+                                <textarea class="form-control content-respose-643f5c8ada97180e41577b03"
+                                    style="height: 100px;" id="exampleTextarea1" rows="4"></textarea>
+                            </div>
+                        </td>
+                        <td>
+                            <ul>
+                            </ul>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td>14</td>
+
+                        <td>
+                            <p style="color: red">sp ko tồn tại</p>
+                        </td>
+                        <td>sản phẩm này không tồn tại</td>
+                        <td>
+                            Nguyễn Hải Dương
+                        </td>
+                        <td>
+                            Shop ơi, làm sao để mua hàng
+                        </td>
+                        <td>
+                            2023-04-19T03:21:14.977Z
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-inverse-info btn-fw btn-sm btn-response"
+                                data-id="643f5e2ada97180e41577f7b">Phản hồi</button>
+                            <div class="form-group">
+                                <label for="exampleTextarea1 ">Nhập nội dung phản hồi</label>
+                                <p class="err-content-respose" style="color: red"></p>
+                                <textarea class="form-control content-respose-643f5e2ada97180e41577f7b"
+                                    style="height: 100px;" id="exampleTextarea1" rows="4"></textarea>
+                            </div>
+                        </td>
+                        <td>
+                            <ul>
+                                <li>Thời gian: Wed Apr 19 2023 10:22:26 GMT+0700 (Indochina Time), <br> <b>Nội dung: bạn
+                                        hãy đăng kí một tài khoản, sau đó thêm vào giỏ hàng rồi thanh toán nó nhé. Hoặc
+                                        nếu bạn ko cần tao tài khoản thì bấm vào MUA NGAY. cảm ơn bạn</b></li>
+                            </ul>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td>15</td>
+
+                        <td>
+                            <p style="color: red">sp ko tồn tại</p>
+                        </td>
+                        <td>sản phẩm này không tồn tại</td>
+                        <td>
+                            Nguyễn Hoàng Nữ Oanh
+                        </td>
+                        <td>
+                            deop qa
+                        </td>
+                        <td>
+                            2023-04-19T05:03:49.838Z
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-inverse-info btn-fw btn-sm btn-response"
+                                data-id="643f7635119e66b95cba2bce">Phản hồi</button>
+                            <div class="form-group">
+                                <label for="exampleTextarea1 ">Nhập nội dung phản hồi</label>
+                                <p class="err-content-respose" style="color: red"></p>
+                                <textarea class="form-control content-respose-643f7635119e66b95cba2bce"
+                                    style="height: 100px;" id="exampleTextarea1" rows="4"></textarea>
+                            </div>
+                        </td>
+                        <td>
+                            <ul>
+                                <li>Thời gian: Wed Apr 19 2023 12:04:34 GMT+0700 (Indochina Time), <br> <b>Nội dung: yeu
+                                        em</b></li>
+                            </ul>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td>16</td>
+
+                        <td>
+                            <p style="color: red">sp ko tồn tại</p>
+                        </td>
+                        <td>sản phẩm này không tồn tại</td>
+                        <td>
+                            Nguyễn Hoàng Nữ Oanh
+                        </td>
+                        <td>
+                            hi bé yêu
+                        </td>
+                        <td>
+                            2023-04-20T15:44:48.021Z
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-inverse-info btn-fw btn-sm btn-response"
+                                data-id="64415df01e7058ad501101d0">Phản hồi</button>
+                            <div class="form-group">
+                                <label for="exampleTextarea1 ">Nhập nội dung phản hồi</label>
+                                <p class="err-content-respose" style="color: red"></p>
+                                <textarea class="form-control content-respose-64415df01e7058ad501101d0"
+                                    style="height: 100px;" id="exampleTextarea1" rows="4"></textarea>
+                            </div>
+                        </td>
+                        <td>
+                            <ul>
+                                <li>Thời gian: Thu Apr 20 2023 22:45:53 GMT+0700 (Indochina Time), <br> <b>Nội dung:
+                                        chào em, em co ny chua</b></li>
+                            </ul>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td>17</td>
+
+                        <td>
+                            <p style="color: red">sp ko tồn tại</p>
+                        </td>
+                        <td>sản phẩm này không tồn tại</td>
+                        <td>
+                            Nguyễn Hải Dương
+                        </td>
+                        <td>
+                            Chào cậu
+                        </td>
+                        <td>
+                            2023-04-23T05:12:05.487Z
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-inverse-info btn-fw btn-sm btn-response"
+                                data-id="6444be25ba852a0ae5bf567f">Phản hồi</button>
+                            <div class="form-group">
+                                <label for="exampleTextarea1 ">Nhập nội dung phản hồi</label>
+                                <p class="err-content-respose" style="color: red"></p>
+                                <textarea class="form-control content-respose-6444be25ba852a0ae5bf567f"
+                                    style="height: 100px;" id="exampleTextarea1" rows="4"></textarea>
+                            </div>
+                        </td>
+                        <td>
+                            <ul>
+                            </ul>
+                        </td>
+
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

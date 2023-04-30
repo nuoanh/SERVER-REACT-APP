@@ -1,0 +1,643 @@
+{{!-- /get-inf-company --}}
+{{!-- js for this page --}}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+{{!-- sweet alert --}}
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- jsDeliver -->
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.lazy/1.7.9/jquery.lazy.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.lazy/1.7.9/jquery.lazy.plugins.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.2.0/lazysizes.min.js" async=""></script>
+<script>
+    $(document).ready(function () {
+        loadInfCompany()
+        function loadInfCompany() {
+            $(".layout").css('display', 'block')
+            $.ajax({
+                url: '/get-inf-company',
+                async: true,
+                type: 'GET',
+                dataType: "json",
+                encode: true,
+                responseType: 'application/json'
+            }).done(function (data) {
+                $(".about-company").html(data.about);
+                $(".phone-company").html(data.phone);
+                $(".logo-company").attr('src', data.logo);
+                $(".name-company").html(data.name)
+                $(".email-company").html(data.email)
+                $(".address-company").html(data.address)
+                $(".content-blog-company").html(data.aboutPage.content);
+                $(".title-blog-company").html(data.aboutPage.title);
+                $(".image-blog-company").attr('src', data.aboutPage.image)
+
+                console.log('dataaa', data)
+                //banner slider
+                let html = " ";
+                let banner = data.home.banner.image;
+
+                $(".title-banner").html(data.home.banner.title)
+                $(".content-banner").html(data.home.banner.content)
+                let arr_slide = data.home.slider.image;
+                for (let i = 0; i < arr_slide.length; i++) {
+                    $(".img-sl-ft-" + (i + 1) + "").attr('src', arr_slide[i].urlLinkImage)
+                }
+
+
+                for (let i = 0; i < banner.length; i++) {
+                    $(".img-banner" + (i + 1) + "").attr('src', banner[i].urlLinkImage);
+                }
+                $(".layout").hide();
+            })
+        }
+
+        //load all category
+        loadCategory()
+        function loadCategory() {
+            $(".layout").css('display', 'block')
+            $.ajax({
+                url: '/get-all-category',
+                async: true,
+                type: 'GET',
+                dataType: "json",
+                encode: true,
+                responseType: 'application/json'
+            }).done(function (data) {
+                console.log(data)
+                let html = "";
+                data.map((cate) => {
+                    html += ` <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                <div class="shop-cat-box">
+                    <img class="img-fluid" src="`+ cate.image + `" alt="" />
+                    <a class="btn hvr-hover" href="/category/`+ cate._id + `">` + cate.name + `</a>
+                </div>
+            </div>`
+                })
+                $(".all-category").html(html);
+
+                $(".layout").hide();
+            })
+        }
+
+
+        //load special prod
+        loadSpecialProd();
+        function loadSpecialProd() {
+            $(".layout").css('display', 'block')
+            $.ajax({
+                url: '/get-special-prod',
+                async: true,
+                type: 'GET',
+                dataType: "json",
+                encode: true,
+                responseType: 'application/json'
+            }).done(function (data) {
+                console.log(data)
+                let html = "";
+                data.map((item) => {
+                    html += ` <a href="/product/` + item.slug + `"><div class="el-wrapper">
+                        <div class="box-up">
+                            <img class="img" src="`+ item.image[0].urlLinkImage + `" alt="">
+                            <div class="img-info">
+                                <div class="info-inner">
+                                    <span class="p-name">`+ item.nameProduct + `</span>
+                                    <span class="p-company">`+ item.category.name + `</span>
+                                </div>
+                                <div class="a-size">Mô tả : <span class="size">`+ item.description + `</span></div>
+                            </div>
+                        </div>
+
+                        <div class="box-down">
+                            <div class="h-bg">
+                                <div class="h-bg-inner"></div>
+                            </div>
+
+                            <a class="cart" href="#">
+                                <span class="price">Giá: `+ parseFloat(item.price).toLocaleString('en-US', { style: 'currency', currency: 'VND' }) + `</span>
+                                <span class="add-to-cart">
+                                    <span class="txt">Thêm vào giỏ hàng</span>
+                                </span>
+                            </a>
+                        </div>
+                    </div></a>`
+                })
+                $(".all-special-prod").html(html);
+
+                $(".layout").hide();
+            })
+        }
+        loadNewprod()
+        //load new prod
+        function loadNewprod() {
+            $(".layout").css('display', 'block')
+            $.ajax({
+                url: '/get-new-product',
+                async: true,
+                type: 'GET',
+                dataType: "json",
+                encode: true,
+                responseType: 'application/json'
+            }).done(function (data) {
+                console.log(data)
+                let html = ""
+                data.map((prod) => {
+                    html += `
+                    <div class="slider swiper-slide">
+                    
+            <div class="content-img">
+                <img src="`+ prod.image[0].urlLinkImage + `" class="img-content" alt="">
+            </div>
+            <div class="content-inf">
+                <div class="inf">
+                    <h5>`+ parseFloat(prod.price).toLocaleString('en-US', { style: 'currency', currency: 'VND' }) + ` </h5>
+                    <p>Mới</p>
+                        <a href="/product/`+ prod.slug + `"><b>` + prod.nameProduct + `</b></a>
+                    <span>
+                        danh mục: `+ prod.category.name + `
+                    </span>
+                    <a href="/product/`+ prod.slug + `">Xem chi tiết</a>
+                </div>
+            </div>
+        </div>`;
+                })
+                $(".contain-slider").html(html);
+            })
+        }
+        //comment
+        $(".btn-add-comment").click(function () {
+            $(".layout").css('display', 'block');
+            $(".err-content").html(" ")
+            let content_cmt = $(".comment-content").val();
+            if (content_cmt == "") {
+                $(".err-content").html('Chưa điền nội dung !');
+                $(".layout").hide();
+            } else {
+                let form = new FormData();
+                form = {
+                    content: content_cmt
+                }
+                $.ajax({
+                    url: '/add-comment',
+                    async: true,
+                    type: 'POST',
+                    data: form,
+                    dataType: "json",
+                    encode: true,
+                    responseType: 'application/json'
+                }).done(function (data) {
+                    $(".layout").hide();
+                    if (data.status == false) {
+                        window.location.replace("/login");
+                    }
+                    if (data.status == 'success') {
+                        $(".comment-content").val(" ");
+                        loadAllComment();
+                    }
+                })
+            }
+        })
+        loadAllComment()
+        function loadAllComment() {
+            $.ajax({
+                url: '/get-all-comment-page',
+                async: true,
+                type: 'GET',
+                dataType: "json",
+                encode: true,
+                responseType: 'application/json'
+            }).done(function (data) {
+                console.log(data);
+                let html = "";
+                data.map((cmt) => {
+                    html += `  <div class="media mb-3">
+                            <div class="mr-2">
+                                <img class="rounded-circle border p-1"
+                                    src=`;
+                    if (!cmt.account.imageAvata) {
+                        html += 'data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2264%22%20height%3D%2264%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_160c142c97c%20text%20%7B%20fill%3Argba(255%2C255%2C255%2C.75)%3Bfont-weight%3Anormal%3Bfont-family%3AHelvetica%2C%20monospace%3Bfont-size%3A10pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_160c142c97c%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22%23777%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2213.5546875%22%20y%3D%2236.5%22%3E64x64%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E'
+                    } else {
+                        html += cmt.account.imageAvata
+                    }
+                    html += `
+                                    alt="Generic placeholder image" style="width: 60px; height: 60px">
+                            </div>
+                            <div class="media-body">
+                                <p style="word-break: break-word; white-space: pre-line; margin-left: 20px; font-weight: lighter; margin-right: 20px; text-align: justify;  margin-bottom: 20px;"><b>`+ cmt.account.name + ` </b> bình luận:  ` + cmt.content + `.</p>
+                                <small class="text-muted">`+ cmt.createdAt + `</small>
+                            </div>
+                        </div>
+                        <hr>
+`;
+                    if (cmt.response) {
+                        cmt.response.map((res) => {
+                            html += `<div class="media mb-3" style="margin-left: 10px; padding-bottom: 20px; background: #e8e3a4; border-left: 5px solid black">
+                            <div class="mr-2">
+                                <img class="rounded-circle border p-1" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2264%22%20height%3D%2264%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_160c142c97c%20text%20%7B%20fill%3Argba(255%2C255%2C255%2C.75)%3Bfont-weight%3Anormal%3Bfont-family%3AHelvetica%2C%20monospace%3Bfont-size%3A10pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_160c142c97c%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22%23777%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2213.5546875%22%20y%3D%2236.5%22%3E64x64%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E" alt="Generic placeholder image">
+                            </div>
+                            <div class="media-body">
+                                <p style="word-break: break-word; white-space: pre-line; margin-left: 20px; font-weight: lighter; margin-right: 20px; text-align: justify;  margin-bottom: 20px;"><b>Shop:  </b> bình luận:  `+ res.content + `.</p>
+                                <small class="text-muted">`+ res.time + `</small>
+                            </div>
+                              <hr>
+                        </div>`
+                        })
+
+                    }
+                    ;
+                })
+                $(".all-comment").html(html);
+
+            })
+        }
+
+    })
+</script>
+
+<div class="layout"
+    style="position: fixed; width: 100%; height: 100%; top: 0; background-color: rgba(75, 74, 74, 0.5); z-index: 100; display: none; ">
+    <div class="lds-roller" style="position: absolute; top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+</div>
+<div class="top-search">
+    <div class="container">
+        <div class="input-group">
+            <span class="input-group-addon"><i class="fa fa-search"></i></span>
+            <input type="text" class="form-control" placeholder="Search">
+            <span class="input-group-addon close-search"><i class="fa fa-times"></i></span>
+        </div>
+    </div>
+</div>
+<!-- End Top Search -->
+
+<!-- Start Slider -->
+<div id="slides-shop" class="cover-slides">
+    <ul class="slides-container contain-banner-slide">
+
+        <li class="text-center">
+            <img class="img-banner1" src="user/images/banner.jpg" alt="">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h1 class="m-b-20"><strong class="title-banner">Welcome To <br> Freshshop</strong></h1>
+                        <p class="m-b-40 content-banner">See how your users experience your website in realtime or view
+                            <br> trends
+                            to see any changes in performance over time.
+                        </p>
+                        <p><a class="btn hvr-hover" href="/shop">Khám phá ngay</a></p>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li class="text-center">
+            <img class="img-banner2" src="user/images/banner.jpg" alt="">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h1 class="m-b-20"><strong class="title-banner">Welcome To <br> Freshshop</strong></h1>
+                        <p class="m-b-40 content-banner">See how your users experience your website in realtime or view
+                            <br> trends
+                            to see any changes in performance over time.
+                        </p>
+                        <p><a class="btn hvr-hover" href="#">Shop New</a></p>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li class="text-center">
+            <img class="img-banner3" src="user/images/banner.jpg" alt="">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h1 class="m-b-20"><strong class="title-banner">Welcome To <br> Freshshop</strong></h1>
+                        <p class="m-b-40 content-banner">See how your users experience your website in realtime or view
+                            <br> trends
+                            to see any changes in performance over time.
+                        </p>
+                        <p><a class="btn hvr-hover" href="#">Shop New</a></p>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
+    <div class="slides-navigation">
+        <a href="#" class="next"><i class="fa fa-angle-right" aria-hidden="true"></i></a>
+        <a href="#" class="prev"><i class="fa fa-angle-left" aria-hidden="true"></i></a>
+    </div>
+</div>
+<!-- End Slider -->
+
+<!-- Start Categories  -->
+<section id="slider" class="swiper mySwiper">
+    <h3>Sản phẩm gần đây</h3>
+    <div class="contain-slider swiper-wrapper">
+
+
+
+    </div>
+    <div class="swiper-button-next"><i class="fa-solid fa-angle-right"></i></div>
+    <div class="swiper-button-prev"><i class="fa-solid fa-angle-left"></i></div>
+    <div class="swiper-pagination"></div>
+</section>
+<div class="categories-shop">
+    <div class="container">
+        <div class="row all-category">
+
+
+        </div>
+    </div>
+</div>
+
+{{!-- slide --}}
+<!-- End Categories -->
+
+
+<!-- Start Products  -->
+<div class="products-box">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <section id="deatail-job">
+                    <div class="inf-job">
+                        <div class="title-job">
+                            <div class="inf">
+                                <span class="name-company"></span>
+                                <b>Tôi có thể giúp gì cho bạn ?</b>
+                                <p>
+                                    <i class="fa fa-star" aria-hidden="true"></i>
+                                    <i class="fa fa-star" aria-hidden="true"></i>
+                                    <i class="fa fa-star" aria-hidden="true"></i>
+                                    <i class="fa fa-star" aria-hidden="true"></i>
+                                    <i class="fa fa-star" aria-hidden="true"></i>
+                                </p>
+                            </div>
+                            <div class="contain-user">
+                                <img class="logo-company" src="./img/coding.png" alt="">
+                                <b class="phone-company">0868617603</b>
+                                <p class="name-company">Người mới</p>
+                            </div>
+                        </div>
+                        <div class="about-job">
+                            <b id="i-about-job">Thông tin về chúng tôi</b></br>
+                            <p class="about-company"></p></br>
+
+                            <b id="i-about-customer">Địa chỉ</b></br>
+                            <p class="address-company"></p></br>
+                            <b id="i-about-ask">Khách hàng nói gì</b></br>
+                            <b id="i-about-me">Về tôi</b>
+                            <div class="about-me">
+                                <div class="skill-me">
+                                    <div class="inf-me">
+                                        <img src="" class="logo-company" alt="">
+                                        <div class="contact">
+                                            <b class="phone-company">0868617603</b>
+                                            <p>
+                                                <i class="fa fa-star" aria-hidden="true"></i>
+                                                <i class="fa fa-star" aria-hidden="true"></i>
+                                                <i class="fa fa-star" aria-hidden="true"></i>
+                                                <i class="fa fa-star" aria-hidden="true"></i>
+                                                <i class="fa fa-star" aria-hidden="true"></i>
+                                                0(0)
+                                            </p>
+                                        </div>
+
+                                    </div>
+                                    <a href="#" class="email-company">Xem thông tin của tôi</a>
+                                    <b>Tên shop</b>
+                                    <p class="name-company"></p>
+                                </div>
+                                <div class="relative-action">
+                                    <p>Từ</p>
+                                    <b>Việt Nam</b>
+                                    <p>Ngôn ngữ</p>
+                                    <b>Tiếng việt</b>
+                                    <p>Thành viên từ</p>
+                                    <b>18-10-2010</b>
+
+                                </div>
+
+                            </div>
+                            <b id="i-about-vote">Đánh giá</b></br>
+                            <div class="vote">
+                                <div class="sum-vote">
+                                    <i class="fa fa-star" aria-hidden="true"></i>
+                                    <p>0</p>
+                                    <b>5 Đánh giá</b>
+                                </div>
+                                <div class="detail-vote">
+                                    <div class="thing-vote">
+                                        <p>Độ phản hồi</p>
+                                        <span class="rating">
+
+                                        </span>
+                                        <p>3.0</p>
+                                    </div>
+                                    <div class="thing-vote">
+                                        <p>Giao tiếp khách hàng</p>
+                                        <span class="rating">
+
+                                        </span>
+                                        <p>4.0</p>
+                                    </div>
+                                    <div class="thing-vote">
+                                        <p>Làm đúng theo yêu cầu</p>
+                                        <span class="rating">
+
+                                        </span>
+                                        <p>3.0</p>
+                                    </div>
+                                    <div class="thing-vote">
+                                        <p>Giao hàng nhanh chống</p>
+                                        <span class="rating">
+
+                                        </span>
+                                        <p>0.0</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="form-bought">
+                        <div class="f-stiky">
+                            <div class="wrapper">
+                                <header>Thêm về chúng tôi</header>
+                                <input type="radio" name="slider" checked id="basic">
+                                <input type="radio" name="slider" id="pro">
+                                <input type="radio" name="slider" id="premium">
+                                <nav>
+                                    <label for="pro" class="pro"><i class="fas fa-blog"></i>Bài viết</label>
+                                </nav>
+                                <section>
+
+
+
+                                    <div class="content content-1   content-2 ">
+                                        <div class="title title-blog-company">This is a Blog content</div>
+                                        <img src="" class="image-blog-company"
+                                            style="width: 100%; margin: auto; margin-bottom: 20px;" alt="">
+                                        <p class="content-blog-company"></p>
+                                        <a href="/shop"
+                                            style="padding: 10px; background-color: rgb(48, 90, 47); margin-top: 40px; color: white;">Mua
+                                            ngay</a>
+                                    </div>
+
+                                </section>
+                            </div>
+                        </div>
+                    </div>
+
+                </section>
+            </div>
+        </div>
+        <div class="row" style="margin-top: 20px;">
+            <div class="col-lg-12">
+                <div class="title-all text-center">
+                    <h1>Mặt hàng nổi bật</h1>
+                    <p>Sản phẩm đặc biệt của shop</p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="special-menu text-center">
+                    <div class="button-group filter-button-group">
+                        <button class="active" data-filter="*">Sản phẩm nổi bật</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="page-wrapper">
+            <div class="page-inner">
+                <div class="row all-special-prod">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- slider -->
+
+<!-- Swiper JS -->
+<script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+<script>
+    var swiper = new Swiper(".mySwiper", {
+        slidesPerView: 4,
+        spaceBetween: 10,
+        slidesPerGroup: 1,
+        loop: true,
+        centerSlide: 'true',
+        fade: 'true',
+        grabCursor: 'true',
+        pagination: {
+            el: ".swiper-pagination",
+            clickable: true,
+            dynamicBullets: true
+        },
+        navigation: {
+            nextEl: ".swiper-button-next",
+            prevEl: ".swiper-button-prev",
+        },
+        breakpoints: {
+            0: {
+                slidesPerView: 1,
+            },
+            520: {
+                slidesPerView: 3,
+            },
+            950: {
+                slidesPerView: 4,
+            }
+
+        }
+    });
+</script>
+<div class="container">
+
+    <div class="row my-5">
+        <div class="card card-outline-secondary my-4">
+            <div class="card-header">
+                <h2>Đánh giá của khách hàng</h2>
+                <p>Sự đánh giá của khách hàng là độ tin cậy của chúng tôi, rất mong và hân hạnh được nhận những góp
+                    í để chúng tôi có thể cải thiện và hoàn chỉnh hơn, cảm ơn quý khách hàng đã ghé thăm .</p>
+            </div>
+            <div class="card-body">
+                <div class="all-comment"></div>
+
+                <div class="col-md-12">
+                    <div class="form-group has-error">
+                        <textarea class="form-control comment-content" id="message" placeholder="Nội dung" rows="4"
+                            data-error="Write your message" required=""></textarea>
+                        <p class="err-content" style="color: red; font-size: 12px;"></p>
+                    </div>
+                    <div class="submit-button text-center">
+                        <button class="btn hvr-hover  btn-add-comment" id="submit" type="button"
+                            style="pointer-events: all; cursor: pointer;">Để lại nhận xét</button>
+                        <div id="msgSubmit" class="h3 text-center hidden"></div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+
+                <hr>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Start Instagram Feed  -->
+<div class="instagram-box">
+
+    <div class="main-instagram owl-carousel owl-theme slide-footer">
+        <div class="item">
+            <div class="ins-inner-box">
+                <img src="user/images/instagram-img-01.jpg" class="img-sl-ft-1" alt="" />
+                <div class="hov-in">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="item">
+            <div class="ins-inner-box">
+                <img src="user/images/instagram-img-01.jpg" class="img-sl-ft-2" alt="" />
+                <div class="hov-in">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="item">
+            <div class="ins-inner-box">
+                <img src="user/images/instagram-img-01.jpg" class="img-sl-ft-3" alt="" />
+                <div class="hov-in">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="item">
+            <div class="ins-inner-box">
+                <img src="user/images/instagram-img-01.jpg" class="img-sl-ft-4" alt="" />
+                <div class="hov-in">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="item">
+            <div class="ins-inner-box">
+                <img src="user/images/instagram-img-01.jpg" class="img-sl-ft-5" alt="" />
+                <div class="hov-in">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- End Instagram Feed  -->
+
+<!-- Start Top Search -->

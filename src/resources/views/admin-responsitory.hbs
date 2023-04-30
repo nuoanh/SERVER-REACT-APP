@@ -1,0 +1,441 @@
+{{!-- js for this page --}}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+{{!-- sweet alert --}}
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- jsDeliver -->
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.lazy/1.7.9/jquery.lazy.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.lazy/1.7.9/jquery.lazy.plugins.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.2.0/lazysizes.min.js" async=""></script>
+
+<script>
+    $(document).ready(function () {
+
+
+
+        function dataLoading() {
+            //load all design from drive
+            $.ajax({
+                url: '/admin/all-image-project',
+                type: 'GET',
+                dataType: "json",
+                encode: true,
+            }).done(function (data) {
+                console.log(data);
+                let html = "";
+                data.map((item) => {
+                    html += ` <div class="gallery-item" >
+                    <div class="content image-design" style="cursor: pointer">
+                        <img class="lazyload img-design-from-drive" data-sizes="auto"  data-src="`+ item.thumbnailLink + `" data-id-image=` + item.id + ` alt="">
+                        <div class ="inf-image"></div>
+                    </div>
+                </div>`;
+                })
+                $("#gallery").html(html);
+                $(".img-design-from-drive").click(function () {
+                    Swal.fire({
+                        title: 'Bạn có chắc muốn xoá ảnh này trong driver?',
+                        text: "Dự án nào đó chứa ảnh này sẽ bị mất, bạn buộc phải cập nhật lại dự án đó!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Chắc chắn xoá!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            let idImage = $(this).attr('data-id-image');
+                            $.ajax({
+                                url: '/admin/delete-image-project-drive',
+                                type: 'POST',
+                                data: { fileId: idImage },
+                                dataType: "json",
+                                encode: true,
+                            }).done(function (data) {
+                                if (data == 204) {
+                                    Swal.fire(
+                                        'Deleted!',
+                                        'Your file has been deleted.',
+                                        'success'
+                                    )
+                                    dataLoading();
+                                } else {
+                                    alert(data);
+                                }
+                            })
+                        }
+                    })
+
+                })
+            })
+        }
+
+        dataLoading()
+
+        $(".btn-bulk-upload-design").click(function () {
+            $(this).html('Đăng tải...');
+            $(this).attr('type', 'button').addClass('btn-inverse-dark btn-fw');
+            if ($(".all-file-upload")[0].files[0]) {
+
+                $("#form-upload-image").submit();
+            } else {
+                if (files) {
+                    console.log('123', files);
+                    $("#form-upload-image").submit();
+                } else {
+                    $(this).attr('type', 'submit').removeClass('btn-inverse-dark btn-fw');
+                    Swal.fire('Chưa có file nào được chọn !!!')
+                    $(this).html('Tải lên');
+
+                }
+
+            }
+
+        })
+    })
+</script>
+<style>
+    /* MAIN STYLE */
+
+    .card {
+        width: 100%;
+        height: auto;
+        padding: 15px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
+        border-radius: 5px;
+        overflow: hidden;
+        background: #fafbff;
+    }
+
+    .card .top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+    }
+
+    .card p {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #878a9a;
+    }
+
+    .card button {
+        outline: 0;
+        border: 0;
+        -webkit-appearence: none;
+        background: #5256ad;
+        color: #fff;
+        border-radius: 4px;
+        transition: 0.3s;
+        cursor: pointer;
+        font-weight: 400;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
+        font-size: 0.8rem;
+        padding: 8px 13px;
+    }
+
+    .card button:hover {
+        opacity: 0.8;
+    }
+
+    .card button:active {
+        transform: translateY(5px);
+    }
+
+    .card .drag-area {
+        width: 100%;
+        height: 160px;
+        border-radius: 5px;
+        border: 2px dashed #d5d5e1;
+        color: #c8c9dd;
+        font-size: 0.9rem;
+        font-weight: 500;
+        position: relative;
+        background: #dfe3f259;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        user-select: none;
+        -webkit-user-select: none;
+        margin-top: 10px;
+    }
+
+    .card .drag-area .visible {
+        font-size: 18px;
+    }
+
+    .card .select {
+        color: #5256ad;
+        margin-left: 5px;
+        cursor: pointer;
+        transition: 0.4s;
+    }
+
+    .card .select:hover {
+        opacity: 0.6;
+    }
+
+    .card .container {
+        width: 100%;
+        height: auto;
+        display: flex;
+        justify-content: flex-start;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        max-height: 200px;
+        overflow-y: auto;
+        margin-top: 10px;
+    }
+
+    .card .container .image {
+        width: calc(26% - 19px);
+        margin-right: 15px;
+        height: 75px;
+        position: relative;
+        margin-bottom: 8px;
+    }
+
+    .card .container .image img {
+        width: 100%;
+        height: 100%;
+        border-radius: 5px;
+    }
+
+    .card .container .image span {
+        position: absolute;
+        top: -2px;
+        right: 9px;
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+    /* dragover class will used in drag and drop system */
+    .card .drag-area.dragover {
+        background: rgba(0, 0, 0, 0.4);
+    }
+
+    .card .drag-area.dragover .on-drop {
+        display: inline;
+        font-size: 28px;
+    }
+
+    .card input,
+    .card .drag-area .on-drop,
+    .card .drag-area.dragover .visible {
+        display: none;
+    }
+
+    #gallery {
+        width: 100%;
+        height: auto;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-evenly;
+        align-items: center;
+    }
+
+    .gallery-item {
+        width: 19.9%;
+    }
+
+    .gallery-item>div {
+        width: 100%;
+        height: 300px;
+        position: relative;
+        margin-left: 2px;
+        overflow: hidden;
+    }
+
+
+    .gallery-item>div>img {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        object-fit: cover;
+        padding-bottom: 5%;
+    }
+
+    .inf-image {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: -100%;
+        background-color: rgb(227, 230, 233, 0.6);
+    }
+</style>
+
+<div class="content-wrapper">
+    <div class="row">
+        <div class="col-md-5 grid-margin stretch-card">
+            <form action="/admin/bulk-upload-design" enctype="multipart/form-data" id="form-upload-image" method="POST"
+                style="width: 100%;">
+
+                <div class="card">
+                    <div class="top">
+                        <p>Chọn một & nhiều ảnh muốn tải lên</p>
+                        <button type="button" class="btn-bulk-upload-design">Đăng lên</button>
+                    </div>
+                    <div class="drag-area">
+                        <span class="visible">
+                            Chọn một & nhiều ảnh muốn tải lên
+                            <span class="select" role="button">Ảnh từ máy...</span>
+                        </span>
+                        <span class="on-drop">Thả tại đây</span>
+                        <input name="file" type="file" class="file all-file-upload" multiple />
+                    </div>
+
+                    <!-- IMAGE PREVIEW CONTAINER -->
+                    <div class="container"></div>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-7 grid-margin stretch-card">
+            <div class="col-md-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Google Drive là nơi để lưu trữ hình ảnh</h4>
+                        <div class="media">
+                            <i class="ti-world icon-md text-info d-flex align-self-start me-3"></i>
+                            <div class="media-body">
+                                <p class="card-text">Ảnh sẽ phải được nén giảm kích thức dưới 5mb trước khi được lưu vào
+                                    drive, lưu dưới dạng webp để cải thiện hiệu năng website.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+
+
+        </div>
+        <div class="col-md-6 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Thông tin về Google Drive</h4>
+                    <p class="card-description">
+                        nguyenarchitecturehd@gmail.com <code>&lt;Email&gt;</code> !
+                    </p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <address>
+                                <p class="fw-bold">Sử dụng google Drive API.</p>
+                                <p>
+                                    Thư viện của Google chỉ cho phép miễn phí 15GB !
+                                </p>
+                                <p>
+                                    ---
+                                </p>
+                                <p>
+                                    Mua gói update đến khi cần thiết !
+                                </p>
+                            </address>
+                        </div>
+                        <div class="col-md-6">
+                            <address class="text-primary">
+                                <p class="fw-bold">
+                                    Thông tin về E-mail
+                                </p>
+                                <p class="mb-2">
+                                    Chỉ có người cầm Admin mới biết thông tin cụ thể !
+                                </p>
+                                <p class="fw-bold">
+                                    Liên lạc hỗ trợ
+                                </p>
+                                <p>
+                                    0868616703
+                                </p>
+                            </address>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h4 class="card-title">Các quyền được phép khi sử dụng google API</h4>
+                    <p class="card-description">
+                        Bảo mật <code>Token</code> để tránh bị mất thông tin !
+                    </p>
+                    <p class="lead">
+                        Thêm || Sửa || Xoá
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Một số lưu ý khi sử dụng tool !!!</h4>
+                    <ul>
+                        <li>Khi upload nhiều ảnh có thể xảy ra trường hợp tắc nghẽn băng thông, cho nên chưa ảnh có thể
+                            load lên chậm.</li>
+                        <li>Khuyến cáo nén ảnh dưới 5MB để cải thiện hiệu năng của website.</li>
+                        <li>Định dạng khi đăng lên sẽ luôn luôn là định dạng .webp.</li>
+                        <li>Không nên truy cập trực tiếp vào Google Drive để đăng tải trực tiếp.</li>
+                        <li>Thông qua tool này thì hiệu suất website sẽ được cải thiện hơn.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <img src="" alt="" id="show-img-upload" style="width: 150px; height: auto;">
+    <div class="row">
+        <p>Kho lưu trữ hình ảnh </p>
+        <p>Tất cả hình ảnh được lưu tại google drive đã được cấp</p>
+
+        <div class="col-md-12 grid-margin stretch-card">
+
+            <div class="gallery" id="gallery">
+
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+
+    var files = [],
+        dragArea = document.querySelector('.drag-area'),
+        input = document.querySelector('.drag-area input'),
+        button = document.querySelector('.card button'),
+        select = document.querySelector('.drag-area .select'),
+        container = document.querySelector('.container');
+
+    /** CLICK LISTENER */
+    select.addEventListener('click', () => input.click());
+
+    /* INPUT CHANGE EVENT */
+    input.addEventListener('change', () => {
+        let file = input.files;
+
+        // if user select no image
+        if (file.length == 0) return;
+
+        for (let i = 0; i < file.length; i++) {
+            if (file[i].type.split("/")[0] != 'image') continue;
+            if (!files.some(e => e.name == file[i].name)) files.push(file[i])
+        }
+
+        showImages();
+    });
+
+    /** SHOW IMAGES */
+    function showImages() {
+        container.innerHTML = files.reduce((prev, curr, index) => {
+            return `${prev}
+		    <div class="image">
+			    <span onclick="delImage(${index})">&times;</span>
+			    <img src="${URL.createObjectURL(curr)}" />
+			</div>`
+        }, '');
+        console.log(files)
+    }
+
+    /* DELETE IMAGE */
+    function delImage(index) {
+        files.splice(index, 1);
+        showImages();
+    }
+</script>

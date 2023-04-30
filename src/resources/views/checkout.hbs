@@ -1,0 +1,392 @@
+<!-- jsDeliver -->
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.lazy/1.7.9/jquery.lazy.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.lazy/1.7.9/jquery.lazy.plugins.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.2.0/lazysizes.min.js" async=""></script>
+{{!-- js for this page --}}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+{{!-- sweet alert --}}
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $(document).ready(function () {
+        loadCart()
+        function loadCart() {
+            $(".layout").css('display', 'block')
+            $.ajax({
+                url: '/get-cart-user',
+                async: true,
+                type: 'GET',
+                dataType: "json",
+                encode: true,
+                responseType: 'application/json'
+            }).done(function (data) {
+                let html = "";
+                let subTotal = 0;
+                if (data.data.length == 0) {
+                    $(".all-cart").html('Chưa có sản phẩm nào trong bill');
+                } else {
+                    data.data.map((cart) => {
+                        subTotal += (parseFloat(cart.count) * parseFloat(cart.price));
+                        html += `
+                                <div class="media mb-2 border-bottom">
+                                    <img src ="`+ cart.product.prod.image[0].urlLinkImage + `" style="width: 50px; margin-right: 50px; margin-top: 9px" />
+                                    <div class="media-body"> <a href="/product/`+ cart.product.prod.slug + `" target="_blank">` + cart.product.prod.nameProduct + `</a>
+                                        <div class="small text-muted">Giá: `+ parseFloat(cart.price).toLocaleString('en-US', { style: 'currency', currency: 'VND' }) + ` <span class="mx-2">|</span> Số lượng: ` + cart.count + `
+                                            <span class="mx-2">|</span> tổng: `+ (parseFloat(cart.price) * parseFloat(cart.count)).toLocaleString('en-US', { style: 'currency', currency: 'VND' }) + `
+                                        </div>
+                                    </div>
+                                </div>`;
+                    })
+                    let html_order = ` <div class="order-box">
+                    <h3>Đơn hàng</h3>
+                    <div class="d-flex">
+                        <h4>Tổng toàn bộ</h4>
+                        <div class="ml-auto font-weight-bold"> `+ subTotal.toLocaleString('en-US', { style: 'currency', currency: 'VND' }) + `</div>
+                    </div>
+                    <div class="d-flex">
+                        <h4>Giảm giá</h4>
+                        <div class="ml-auto font-weight-bold"> 0</div>
+                    </div>
+                    <hr class="my-1">
+                    <div class="d-flex">
+                        <h4>Mã giảm giá</h4>
+                        <div class="ml-auto font-weight-bold"> 0</div>
+                    </div>
+                    <div class="d-flex">
+                        <h4>Phí ship</h4>
+                        <div class="ml-auto font-weight-bold"> : 15.000 </div>
+                    </div>
+                    <hr>
+                    <div class="d-flex gr-total">
+                        <h5>Thành tiền</h5>
+                        <div class="ml-auto h5">`+ (subTotal + 15000).toLocaleString('en-US', { style: 'currency', currency: 'VND' }) + `</div>
+                    </div>
+                    <hr>
+                </div>
+                 <div class="col-12 d-flex shopping-box"> <a href="javascript: value(0)"
+                            class="ml-auto btn hvr-hover btn-order">Đặt
+                            hàng
+                        </a> </div>`;
+                    $(".all-cart").html(html);
+                    $(".order").html(html_order)
+                }
+
+                $(".layout").hide()
+            }).then(() => {
+                $(".btn-order").click(function () {
+                    $(".layout").css('display', 'block');
+                    let nameSend = $(".name-send").val();
+                    let recipient = $(".recipient").val();
+                    let address = $(".address").val();
+                    let phone = $(".phone").val();
+                    let permit = true;
+
+                    $(".err-phone").html(" ")
+                    $(".err-address").html(" ")
+                    $(".err-recipient").html(" ")
+                    $(".err-name").html(" ")
+                    if (nameSend == "") {
+                        permit = false;
+                        $(".err-name").html('chưa điền tên người đặt')
+                    }
+                    if (recipient == "") {
+                        permit = false;
+                        $(".err-recipient").html('chưa điền người nhận')
+                    }
+                    if (address == "") {
+                        permit = false;
+                        $(".err-address").html('chưa điền địa chỉ')
+                    }
+                    if (phone == "") {
+                        permit = false;
+                        $(".err-phone").html('chưa điền số điện thoại')
+                    }
+                    if (permit == false) {
+                        $(".layout").hide();
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Thiếu',
+                            text: 'Đang điền thiếu, vui lòng kiểm tra lại',
+                        })
+                    }
+                    if (permit == true) {
+                        let form = new FormData();
+                        form = {
+                            obj: {
+                                nameSend: nameSend,
+                                recipient: recipient,
+                                phone: phone,
+                                addressRecevie: address
+                            }
+                        }
+                        //add bill
+                        $.ajax({
+                            url: '/add-bill',
+                            async: true,
+                            type: 'POST',
+                            data: form,
+                            dataType: "json",
+                            encode: true,
+                            responseType: 'application/json'
+                        }).done(function (data) {
+                            if (data.status == 'success') {
+                                setTimeout(function () {
+                                    window.location.replace("/shop");
+                                }, 1500)
+                                $(".layout").hide();
+                                Swal.fire({
+                                    position: 'top-end',
+                                    icon: 'success',
+                                    title: 'Đặt hàng thành công. Chúng tôi sẽ liên lạc với bạn sớm nhất có thể',
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                })
+                            }
+                            console.log(data)
+                        })
+                    }
+                })
+            })
+        }
+
+        getInfUser();
+        function getInfUser() {
+            //get-inf-login
+            $.ajax({
+                url: '/get-inf-login',
+                async: true,
+                type: 'GET',
+                dataType: "json",
+                encode: true,
+                responseType: 'application/json'
+            }).done(function (data) {
+                $(".username").html(data.data.email)
+                $(".name").html('Tên: ' + data.data.name)
+                $(".name-send").val(data.data.name)
+                $(".recipient").val(data.data.name)
+            })
+        }
+
+
+
+    })
+</script>
+<div class="layout"
+    style="position: fixed; width: 100%; height: 100%; top: 0; background-color: rgba(75, 74, 74, 0.5); z-index: 100; display: none; ">
+    <div class="lds-roller" style="position: absolute; top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+</div>
+
+<!-- Start Cart  -->
+<div class="cart-box-main">
+    <div class="container">
+        <div class="row new-account-login">
+            <div class="col-sm-6 col-lg-6 mb-3">
+                <div class="title-left">
+                    <h3>Tài khoản đăng nhập</h3>
+                    <p class="username"></p>
+                </div>
+                <h5><a data-toggle="collapse" class="name" href="#formLogin" role="button" aria-expanded="false">Tên:
+                    </a></h5>
+
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-sm-6 col-lg-6 mb-3">
+                <div class="checkout-address">
+                    <div class="title-left">
+                        <h3>Thông tin đơn hàng</h3>
+                    </div>
+                    <form class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="firstName">Họ và tên</label>
+                                <input type="text" class="form-control name-send" id="firstName" placeholder="" value=""
+                                    required>
+                                <p class="err-name" style="color: red; font-size: 12px;"></p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="lastName">Người nhận hàng</label>
+                                <input type="text" class="form-control recipient" id="lastName" placeholder="" value=""
+                                    required>
+                                <p class="err-recipient" style="color: red; font-size: 12px;"></p>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="username">Số điện thoại</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control phone" id="username" placeholder="" required>
+                                <p class="err-phone" style="color: red; font-size: 12px;"></p>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="address">Địa chỉ(Chỉ xử lí đơn hàng trong khu vực Đà Nẵng)</label>
+                            <p class="err-address" style="color: red; font-size: 12px;"></p>
+                            <input type="text" class="form-control address" id="address" placeholder="" required>
+                        </div>
+
+
+                        <hr class="mb-4">
+
+                    </form>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-6 mb-3">
+                <div class="row">
+                    <div class="col-md-12 col-lg-12">
+                        <div class="shipping-method-box">
+                            <div class="title-left">
+                                <h3>Vận chuyển</h3>
+                            </div>
+                            <div class="mb-4">
+                                <div class="custom-control custom-radio">
+                                    <input id="shippingOption1" name="shipping-option" class="custom-control-input"
+                                        checked="checked" type="radio">
+                                    <label class="custom-control-label" for="shippingOption1">Vận chuyển trong khu vực
+                                        Đà Nẵng</label>
+                                    <span class="float-right font-weight-bold">15.000</span>
+                                </div>
+                                <div class="ml-4 mb-2 small">(2-3 ngày nhận hàng)</div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 col-lg-12">
+                        <div class="odr-box">
+                            <div class="title-left">
+                                <h3>Sản phẩm đã đặt</h3>
+                            </div>
+                            <div class="rounded p-2 bg-light all-cart">
+
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 col-lg-12 order">
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- End Cart -->
+<style>
+    .lds-roller {
+        display: inline-block;
+        position: relative;
+        width: 80px;
+        height: 80px;
+    }
+
+    .lds-roller div {
+        animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        transform-origin: 40px 40px;
+    }
+
+    .lds-roller div:after {
+        content: " ";
+        display: block;
+        position: absolute;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #fff;
+        margin: -4px 0 0 -4px;
+    }
+
+    .lds-roller div:nth-child(1) {
+        animation-delay: -0.036s;
+    }
+
+    .lds-roller div:nth-child(1):after {
+        top: 63px;
+        left: 63px;
+    }
+
+    .lds-roller div:nth-child(2) {
+        animation-delay: -0.072s;
+    }
+
+    .lds-roller div:nth-child(2):after {
+        top: 68px;
+        left: 56px;
+    }
+
+    .lds-roller div:nth-child(3) {
+        animation-delay: -0.108s;
+    }
+
+    .lds-roller div:nth-child(3):after {
+        top: 71px;
+        left: 48px;
+    }
+
+    .lds-roller div:nth-child(4) {
+        animation-delay: -0.144s;
+    }
+
+    .lds-roller div:nth-child(4):after {
+        top: 72px;
+        left: 40px;
+    }
+
+    .lds-roller div:nth-child(5) {
+        animation-delay: -0.18s;
+    }
+
+    .lds-roller div:nth-child(5):after {
+        top: 71px;
+        left: 32px;
+    }
+
+    .lds-roller div:nth-child(6) {
+        animation-delay: -0.216s;
+    }
+
+    .lds-roller div:nth-child(6):after {
+        top: 68px;
+        left: 24px;
+    }
+
+    .lds-roller div:nth-child(7) {
+        animation-delay: -0.252s;
+    }
+
+    .lds-roller div:nth-child(7):after {
+        top: 63px;
+        left: 17px;
+    }
+
+    .lds-roller div:nth-child(8) {
+        animation-delay: -0.288s;
+    }
+
+    .lds-roller div:nth-child(8):after {
+        top: 56px;
+        left: 12px;
+    }
+
+    @keyframes lds-roller {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
