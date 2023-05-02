@@ -74,5 +74,9 @@ router.get('/get-all-comment-page', UserController.allCommentPage);
 
 
 //more api for app order
+//add to cart
+router.post('/add-to-cart-app', UserController.addCartApp);
+router.get('/get-all-table', UserController.getAllTable);
+router.post('/update-order', UserController.updateOrder);
 
 module.exports = router;

@@ -107,7 +107,7 @@ class UserServices {
             }
         }
     }
-    
+
     async genarationAccessToken(account) {
         return jwt.sign({
             data: {
@@ -163,12 +163,12 @@ class UserServices {
     }
 
     //service add to cart
-    async addToCart(cart) {
-        if (cart) {
+    async addToCart(req) {
+        if (req) {
             try {
                 let data = await curdHelper.create({
                     model: 'cart',
-                    obj: cart
+                    obj: req.body
                 });
                 return data;
             } catch (error) {
@@ -386,6 +386,41 @@ class UserServices {
             }
         }
 
+    }
+    //APP
+    //service get all table
+    async getAllTable(request) {
+        if (request) {
+            try {
+                let data = await CartModel
+                    .find()
+                    .populate([{ path: 'account', strictPopulate: false }])
+                    .populate([{ path: 'product.prod', strictPopulate: false }])
+                    .exec();
+            
+               
+                return data;
+            } catch (error) {
+                return error
+            }
+        }
+    }
+
+      // service update order
+      async updateCart(req) {
+        if (req) {
+            try {
+                let data = await curdHelper.update({
+                    model: 'cart',
+                    id: req.body._id,
+                    obj: req.body.obj
+                });
+                return data;
+            } catch (error) {
+                console.log(error)
+                return error
+            }
+        }
     }
 }
 module.exports = new UserServices();

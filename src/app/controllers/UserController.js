@@ -262,6 +262,15 @@ class UserController {
         }
 
     }
+    async addCartApp(req, res, next) {
+        console.log(req.body)
+        res.setHeader("Content-Type", "text/json");
+        res.setHeader("Access-Control-Allow-Origin", "*");
+        let rs = await UserService.addToCart(req);
+        if (rs) {
+            res.status(200).json({ status: 'success', data: rs.data });
+        }
+    }
 
     async getCart(req, res, next) {
         let access_token_user = req.cookies.user_access_token;
@@ -563,6 +572,27 @@ class UserController {
 
         let rs = await UserService.getAllCommentPage(req);
         if (rs) {
+            res.json(rs);
+        }
+    }
+    async getAllTable(req, res, next) {
+        res.setHeader("Content-Type", "text/json");
+        res.setHeader("Access-Control-Allow-Origin", "*");
+
+        let rs = await UserService.getAllTable(req);
+        if (rs) {
+            res.json(rs);
+        }
+    }
+    async updateOrder(req, res, next) {
+        console.log(req.body)
+        res.setHeader("Content-Type", "text/json");
+        res.setHeader("Access-Control-Allow-Origin", "*");
+
+        let rs = await UserService.updateCart(req);
+        console.log(rs)
+        if (rs) {
+
             res.json(rs);
         }
     }
