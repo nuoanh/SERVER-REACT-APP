@@ -596,6 +596,18 @@ class UserController {
             res.json(rs);
         }
     }
+    async liveSearchOrder(req, res, next) {
+        console.log(req.body)
+        res.setHeader("Content-Type", "text/json");
+        res.setHeader("Access-Control-Allow-Origin", "*");
+
+        let rs = await UserService.liveSearchBill(req);
+        console.log(rs)
+        if (rs) {
+
+            res.json(rs);
+        }
+    }
 }
 
 module.exports = new UserController();

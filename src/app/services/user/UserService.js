@@ -397,8 +397,8 @@ class UserServices {
                     .populate([{ path: 'account', strictPopulate: false }])
                     .populate([{ path: 'product.prod', strictPopulate: false }])
                     .exec();
-            
-               
+
+
                 return data;
             } catch (error) {
                 return error
@@ -406,8 +406,8 @@ class UserServices {
         }
     }
 
-      // service update order
-      async updateCart(req) {
+    // service update order
+    async updateCart(req) {
         if (req) {
             try {
                 let data = await curdHelper.update({
@@ -421,6 +421,17 @@ class UserServices {
                 return error
             }
         }
+    }
+
+    //live search bill
+    async liveSearchBill(request, response, next) {
+        console.log(request.body.vlSearch)
+        let rs = await CartModel
+            .find({ name: { $regex: new RegExp('^' + request.body.vlSearch + '.*', 'i') }, status: true })
+            .populate([{ path: 'account', strictPopulate: false }])
+            .populate([{ path: 'product.prod', strictPopulate: false }]).exec();
+        rs = rs.slice(0, 10);
+        return rs;
     }
 }
 module.exports = new UserServices();

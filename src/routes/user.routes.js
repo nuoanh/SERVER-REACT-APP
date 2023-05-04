@@ -78,5 +78,6 @@ router.get('/get-all-comment-page', UserController.allCommentPage);
 router.post('/add-to-cart-app', UserController.addCartApp);
 router.get('/get-all-table', UserController.getAllTable);
 router.post('/update-order', UserController.updateOrder);
+router.post('/live-search-order', UserController.liveSearchOrder)
 
 module.exports = router;
