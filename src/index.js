@@ -14,10 +14,31 @@ const io = require("socket.io")(server);
 
 io.on("connection", socket => {
     console.log("a user connected :D" + socket.id);
-    socket.on("chat message", msg => {
+    socket.on("add-order", msg => {
         console.log(msg);
-        io.emit("chat message", msg);
+        io.emit("server-respone", {
+            target: 'add-order-successfuly',
+            message: msg.content
+        });
+        
     });
+
+    socket.on("update-bill", msg => {
+        console.log(msg);
+        io.emit("server-respone", {
+            target: 'update-order-successfuly',
+            message: msg.content
+        });
+    });
+
+    socket.on("payment-bill", msg => {
+        console.log(msg);
+        io.emit("server-respone", {
+            target: 'payments-order-successfuly',
+            message: msg.content
+        });
+    });
+
 });
 
 

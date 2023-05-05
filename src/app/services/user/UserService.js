@@ -433,5 +433,37 @@ class UserServices {
         rs = rs.slice(0, 10);
         return rs;
     }
+
+    //get all alert
+    async getAllAlert(request) {
+        if (request) {
+            try {
+                let data = await curdHelper.getAll({
+                    model: 'alert',
+                    query: request.query
+                })
+                data = data.map(data => data.toObject());
+                return data;
+            } catch (error) {
+                return 'error';
+            }
+        }
+    }
+
+    //add alert
+    async addAlert(request) {
+        if (request) {
+            console.log(request.body)
+            try {
+                let data = await curdHelper.create({
+                    model: 'alert',
+                    obj: request.body
+                });
+                return data;
+            } catch (error) {
+                console.log(error)
+            }
+        }
+    }
 }
 module.exports = new UserServices();

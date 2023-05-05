@@ -80,4 +80,7 @@ router.get('/get-all-table', UserController.getAllTable);
 router.post('/update-order', UserController.updateOrder);
 router.post('/live-search-order', UserController.liveSearchOrder)
 
+router.get('/get-all-alert', UserController.getAllAlert);
+router.post('/add-alert', UserController.addAlert);
+
 module.exports = router;

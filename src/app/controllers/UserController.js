@@ -608,6 +608,27 @@ class UserController {
             res.json(rs);
         }
     }
+    async getAllAlert(req, res, next) {
+        res.setHeader("Content-Type", "text/json");
+        res.setHeader("Access-Control-Allow-Origin", "*");
+
+        let rs = await UserService.getAllAlert(req);
+        console.log(rs)
+        if (rs) {
+
+            res.json(rs);
+        }
+    }
+    async addAlert(req, res, next) {
+        res.setHeader("Content-Type", "text/json");
+        res.setHeader("Access-Control-Allow-Origin", "*");
+
+        let rs = await UserService.addAlert(req);
+        console.log(rs)
+        if (rs) {
+            res.json(rs);
+        }
+    }
 }
 
 module.exports = new UserController();
