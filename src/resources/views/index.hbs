@@ -96,7 +96,7 @@
                 data.map((item) => {
                     html += ` <a href="/product/` + item.slug + `"><div class="el-wrapper">
                         <div class="box-up">
-                            <img class="img" src="`+ item.image[0].urlLinkImage + `" alt="">
+                            <img class="img" src="`+ item.image[0].urlLinkImage.trim() + `" alt="">
                             <div class="img-info">
                                 <div class="info-inner">
                                     <span class="p-name">`+ item.nameProduct + `</span>
