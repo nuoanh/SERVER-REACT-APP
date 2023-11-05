@@ -61,7 +61,7 @@ class UserServices {
     async getAllProd(request) {
         if (request) {
             let rs = await ProductModel.find({ draft: false }).populate([{ path: 'category', strictPopulate: false }]).exec();
-            rs = rs.slice(0, 10);
+            // rs = rs.slice(0, 10);
             if (rs) {
                 return rs;
             }

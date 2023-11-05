@@ -178,6 +178,7 @@ class AdminServices {
                 populate: [{ path: 'category', strictPopulate: false }],
             })
             data = data.map(data => data.toObject());
+            console.log('mia', data);
             return data;
         } catch (error) {
             return error;
@@ -517,8 +518,8 @@ class AdminServices {
             }
         }
     }
-      // delete category
-      async deleteCategoryBlog(request) {
+    // delete category
+    async deleteCategoryBlog(request) {
         if (request) {
             CateBlogModel.deleteOne(request.body).then(() => {
             }).catch(function (e) {
